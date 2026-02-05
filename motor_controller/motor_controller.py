@@ -1,16 +1,47 @@
 #import RPi.GPIO as GPIO
 
-def motor_init() -> dict:
+'''
+Everything related to motor controll
+'''
+
+
+def motor_init() -> None:
     ''' 
     Settting up GPIO pins for motors
     Data type:  motor = {some : PIN, something : PIN, somethingelse : PIN}
-    Returns:    right, Left
+    Makes right_motor and left_motor as global variables in motor_controller.py
     '''
+    global right_motor
+    global left_motor
 
-    right_motor = {}
-    left_motor = {}
-    return right_motor, left_motor
+    right_motor = {"direction":10}
+    left_motor = {"direction":20}
 
 
-r, l = motor_init()
+def forward(time: int) -> None:
+    ''' Drives forward
+        Input: time [milliseconds]
+    '''
+    print(right_motor["direction"], left_motor["direction"])
 
+
+def backward(time: int) -> None:
+    ''' Drives backward
+        Input: time [milliseconds]
+    '''
+    print(right_motor["direction"], left_motor["direction"])
+
+
+def left(time: int) -> None:
+    ''' Drives left
+        Input: time [milliseconds]
+    '''
+    print(right_motor["direction"], left_motor["direction"])
+
+
+def right(time: int) -> None:
+    ''' Drives right
+        Input: time [milliseconds]
+    '''
+    print(right_motor["direction"], left_motor["direction"])
+    
