@@ -9,13 +9,14 @@ def motor_init() -> None:
     ''' 
     Settting up GPIO pins for motors
     Data type:  motor = {some : PIN, something : PIN, somethingelse : PIN}
-    Makes right_motor and left_motor as global variables in motor_controller.py
+    Makes right_motor and left_motor global variables in motor_controller.py
     '''
     global right_motor
     global left_motor
 
+    # junk data
     right_motor = {"direction":10}
-    left_motor = {"direction":20}
+    left_motor = {"direction":20}   
 
 
 def forward(time: int) -> None:
