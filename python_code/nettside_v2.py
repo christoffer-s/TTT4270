@@ -3,6 +3,7 @@ from flask import Flask, render_template
 import time
 import serial
 import pynmea2
+import gps_to_csv_call
 
 ser = serial.Serial(
         port='/dev/ttyAMA0',
@@ -13,32 +14,33 @@ ser = serial.Serial(
         timeout=1
 )
 
-def get_data():
-     x=ser.readline().decode('utf-8', errors='ignore')
-     if x.startswith('$'):
+#def get_data():
+#     x=ser.readline().decode('utf-8', errors='ignore')
+#     if x.startswith('$'):
 #                try:
-         msg = pynmea2.parse(x)
+#         msg = pynmea2.parse(x)
 #                       if isInstance(msg, pynmea2.RMC): # and msg.status == 'A                               
-         print('-'*20)
-         print(msg.timestamp)
-         print(msg.latitude, msg.lat_dir)
-         print(msg.longitude, msg.lon_dir)
-         print(msg.speed_kph)
-         print('-'*20)
+#         print('-'*20)
+#         print(msg.timestamp)
+#         print(msg.latitude, msg.lat_dir)
+#         print(msg.longitude, msg.lon_dir)
+#         print(msg.speed_kph)
+#         print('-'*20)
 #                except pynmea2.ParseError as e:
 #			print(f"ParseError")
 #                except Exception as e:
 #			print(f"Error {e}")
+#
+#     time.sleep(0.1)
+#     return {"Time": msg.timestamp, "Latitude": msg.latitude, "Longitude": msg.longitude}
 
-     time.sleep(0.1)
-     return {"Time": msg.timestamp, "Latitude": msg.latitude, "Longitude": msg.longitude}
 
-
+gps = gps_to_csv_call.get_gps()
 
 app = Flask(__name__)
 @app.route('/')
 def index():
-	data = {"Time": "20", "Latitude":21, "Longitude":44} 
+	data = {"Latitude": gps[1][0], "Longitude":gps[1][1], "Velocity":gps[1][2]} 
 	return render_template('index.html', measurements=data)
 
 if __name__ == '__main__':
