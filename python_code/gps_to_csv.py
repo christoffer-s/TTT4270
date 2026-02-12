@@ -24,7 +24,7 @@ if x.startswith('$'):
 #		data_csv.append([msg.latitude, msg.longitude, msg.speed_kph])
 		data_csv.append([msg.latitude, msg.longitude,0])
 	except pynmea2.ParseError as e:
-		prin("ParseError")
+		print("ParseError")
 	except Exception as e:
 		print(f"Error {e}")
 
