@@ -63,4 +63,15 @@ def stop() -> None:
     ''' Stops the motors '''
     right_motor_pwm_pin.value = 0
     left_motor_pwm_pin.value = 0
+
+while True:
+    forward(0.5)
+    sleep(2)
+    backward(0.5)
+    sleep(2)
+    stop()
+    sleep(2)
+    forward(1)
+    sleep(2)
+    break
     
