@@ -1,7 +1,7 @@
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 '''
-Everything related to motor controll
+Everything related to motor control
 '''
 
 
@@ -15,15 +15,17 @@ def motor_init() -> None:
     global left_motor
 
     # junk data
-    right_motor = {"direction":10}
-    left_motor = {"direction":20}   
+    right_motor = {"direction":6, "speed":12}   #GPIO6 -> pin 31    GPIO 12 -> pin 32
+    left_motor = {"direction":16, "speed":19}   #GPIO16 -> pin 36   GPIO 19 -> pin 35
 
 
 def forward(time: int) -> None:
     ''' Drives forward
         Input: time [milliseconds]
     '''
-    print(right_motor["direction"], left_motor["direction"])
+    
+    delay()
+    
 
 
 def backward(time: int) -> None:
