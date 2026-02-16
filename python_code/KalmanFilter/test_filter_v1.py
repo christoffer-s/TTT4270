@@ -7,37 +7,40 @@ import serial
 import pynmea2
 import numpy as np
 from filterpy.kalman import KalmanFilter
+import matplotlib.pyplot as plt
+import numpy.random as random
+import copy
 
-ser = serial.Serial(
-	port='/dev/ttyAMA0',
-	baudrate = 9600,
-	parity=serial.PARITY_NONE,
-	stopbits=serial.STOPBITS_ONE,
-	bytesize=serial.EIGHTBITS,
-	timeout=1
-)
+# ser = serial.Serial(
+	# port='/dev/ttyAMA0',
+	# baudrate = 9600,
+	# parity=serial.PARITY_NONE,
+	# stopbits=serial.STOPBITS_ONE,
+	# bytesize=serial.EIGHTBITS,
+	# timeout=1
+# )
 
 # ------------------------------------------------------------------
-def get_gps():
-	x=ser.readline().decode('utf-8', errors='ignore')
-	if x.startswith('$'):
-		try:
-			msg = pynmea2.parse(x)
-			return np.array([msg.latitude, msg.longitude])
-			# if isInstance(msg, pynmea2.RMC): # and msg.status == 'A':
-				# print('-'*20)
-				# print(mgs.timestamp)
-				# print(msg.latitude, msg.lat_dir)
-				# print(msg.longitude, msg.lon_dir)
-				# print(mgs.speed_kph)
-				# print('-'*20)
-		except pynmea2.ParseError as e:
-			print("ParsError")
-		except Exception as e:
-			print(f"Error {e}")
+# def get_gps():
+# 	x=ser.readline().decode('utf-8', errors='ignore')
+# 	if x.startswith('$'):
+# 		try:
+# 			msg = pynmea2.parse(x)
+# 			return np.array([msg.latitude, msg.longitude])
+# 			# if isInstance(msg, pynmea2.RMC): # and msg.status == 'A':
+# 				# print('-'*20)
+# 				# print(mgs.timestamp)
+# 				# print(msg.latitude, msg.lat_dir)
+# 				# print(msg.longitude, msg.lon_dir)
+# 				# print(mgs.speed_kph)
+# 				# print('-'*20)
+# 		except pynmea2.ParseError as e:
+# 			print("ParsError")
+# 		except Exception as e:
+# 			print(f"Error {e}")
 
-	time.sleep(0.1)
-	return np.array([0,0])
+# 	time.sleep(0.1)
+# 	return np.array([0,0])
 # ------------------------------------------------------------------
 
 distance = 111111000 # 111.111km to calculate dx and dy
@@ -71,9 +74,57 @@ kf.P = np.eye(4) * 100. # koovarians matrise, hvor god gjett start kondisjonene 
 # print(kf.P)
 
 
+print(random.random())
 
-def kalmanFilter_update():
-	gps_data = get_gps()
-	kf.predict()
-	kf.update(gps_data) 
-	return 0
+# --------------------------------------------
+# Kode for å lage random path til å teste filter
+
+class PosSensor1(object):
+	def __init__(self, pos = [0,0], vel = (0,0), noise_scale = 1.0):
+		self.vel = vel
+		self.noise_scale = noise_scale
+		self.pos = copy.deepcopy(pos)
+	def read(self):
+		self.pos[0] += self.vel[0]
+		self.pos[1] += self.vel[1]
+		self.pos[0] += (random.uniform(0, 10.0) * 0.9 )
+		self.pos[1] += (random.uniform(0, 10.0) * 0.9 )
+		return [self.pos[0], self.pos[1]]
+
+pxs, pys = [], [] # generere data for random path
+s = PosSensor1([10,100], [20,1], [1.])
+
+# ---------------------------------------------
+
+xs, ys = [], [] # Lister med predicted data for x pos, y pos
+
+
+
+def kalmanFilter_update(KF, xs, ys,z): # Funksjon for å oppdatere filter og hente ut posisjon og fart data
+	try:
+		#gps_data = get_gps()
+		KF.predict()
+		KF.update(z)
+		xs.append(KF.x[0,0])
+		ys.append(KF.x[2,0])
+		return 0
+	except Exception as e:
+		print(f"Error catched: {e}")
+		return 1
+	
+	
+
+for i in range(50):
+	pos = s.read()
+	z = np.array([[pos[0]],[pos[1]]])
+
+	kalmanFilter_update(kf, xs, ys, z)
+
+	pxs.append (pos[0])
+	pys.append(pos[1])
+
+
+plt.plot (xs, ys, "r--")
+plt.plot (pxs, pys)
+plt.legend(["filter", "measurement"])
+plt.savefig("Test plot")
