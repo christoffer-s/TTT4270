@@ -64,6 +64,7 @@ def stop() -> None:
     right_motor_pwm_pin.value = 0
     left_motor_pwm_pin.value = 0
 
+motor_init()
 while True:
     forward(0.5)
     sleep(2)
