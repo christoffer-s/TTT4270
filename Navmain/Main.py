@@ -2,6 +2,7 @@ import json
 import math
 import time
 import networkx as nx
+from python_code import gps_to_csv_call
 
 # ==========================================
 # 1. MATEMATIKK OG KART-HÅNDTERING
@@ -76,8 +77,9 @@ def finn_korteste_vei(G, start_pos, slutt_pos):
 def les_sensorer_og_kalman():
     """Henter bilens estimerte posisjon og retning (fra f.eks. Kalman-filter)."""
     # Dummy-data for testing
-    estimert_lon = 10.40260
-    estimert_lat = 63.41808
+    pos = gps_to_csv_call.get_gps()
+    estimert_lon = pos[1]
+    estimert_lat = pos[0]
     estimert_retning = 90.0 # Peker mot Øst
     return (estimert_lon, estimert_lat), estimert_retning
 
@@ -203,8 +205,8 @@ if __name__ == "__main__":
         exit()
         
     # 2. Definer ruten (Eksempel-koordinater på Gløshaugen)
-    min_start = (10.40260, 63.41808) 
-    mitt_maal = (10.40428, 63.41776)
+    min_start = (63.41809573255258, 10.402332799157428) 
+    mitt_maal = (63.41672421102855, 10.405400716816052)
     
     # 3. Bygg det matematiske kartet (G)
     G_kart = bygg_graf(kart_data)
