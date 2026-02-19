@@ -85,8 +85,8 @@ def les_sensorer_og_kalman():
     """Henter bilens estimerte posisjon og retning (fra f.eks. Kalman-filter)."""
     # Dummy-data for testing
     pos = gps_to_csv_call.get_gps()
-    estimert_lon = pos[1]
-    estimert_lat = pos[0]
+    estimert_lon = pos[0][1]
+    estimert_lat = pos[0][0]
     estimert_retning = 90.0 # Peker mot Øst
     return (estimert_lon, estimert_lat), estimert_retning
 
