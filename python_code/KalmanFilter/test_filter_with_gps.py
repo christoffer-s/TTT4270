@@ -57,7 +57,7 @@ kf.F = np.array([[1, dt, 0, 0],
                 [0,0,1,dt],
                 [0,0,0,1]])
 
-kf.H = np.array([[111111,0,0,0],[0,0,111111*np.cos(get_gps()[0]),0]]) 
+kf.H = np.array([[1,0,0,0],[0,0,1,0]]) 
 # Konverter data, kan få til å gjøre mellom lat- og longtitude til x og y 
 # ved å ta d_lat eller d_long å gange med distance?
 
