@@ -1,50 +1,78 @@
-import RPi.GPIO as GPIO
-
+from gpiozero import PWMOutputDevice, DigitalOutputDevice
+from time import sleep
 '''
 Everything related to motor control
+M1 = right motor
+M3 = left motor
+
 '''
 
 
 def motor_init() -> None:
     ''' 
     Settting up GPIO pins for motors
-    Data type:  motor = {some : PIN, something : PIN, somethingelse : PIN}
-    Makes right_motor and left_motor global variables in motor_controller.py
+
     '''
-    global right_motor
-    global left_motor
+    global right_motor_dir_pin
+    global right_motor_pwm_pin
+    global left_motor_dir_pin
+    global left_motor_pwm_pin
 
-    # junk data
-    right_motor = {"direction":6, "speed":12}   #GPIO6 -> pin 31    GPIO 12 -> pin 32
-    left_motor = {"direction":16, "speed":19}   #GPIO16 -> pin 36   GPIO 19 -> pin 35
+    right_motor_dir_pin = DigitalOutputDevice(6)
+    right_motor_pwm_pin = PWMOutputDevice(12)
+    left_motor_dir_pin = DigitalOutputDevice(16)
+    left_motor_pwm_pin = PWMOutputDevice(13)
 
-
-def forward(time: int) -> None:
+def forward(speed: float) -> None:
     ''' Drives forward
-        Input: time [milliseconds]
+        Input: speed [0.0 - 1.0]
     '''
+    right_motor_dir_pin.off()
+    left_motor_dir_pin.off()
+    right_motor_pwm_pin.value = speed
+    left_motor_pwm_pin.value = speed
     
-    delay()
-    
-
-
-def backward(time: int) -> None:
+def backward(speed: float) -> None:
     ''' Drives backward
-        Input: time [milliseconds]
+        Input: speed [0.0 - 1.0]
     '''
-    print(right_motor["direction"], left_motor["direction"])
+    right_motor_dir_pin.on()
+    left_motor_dir_pin.on()
+    right_motor_pwm_pin.value = speed
+    left_motor_pwm_pin.value = speed
 
-
-def left(time: int) -> None:
+def left(speed: float) -> None:
     ''' Drives left
-        Input: time [milliseconds]
+        Input: speed [0.0 - 1.0]
     '''
-    print(right_motor["direction"], left_motor["direction"])
+    right_motor_dir_pin.off()
+    left_motor_dir_pin.on()
+    right_motor_pwm_pin.value = speed
+    left_motor_pwm_pin.value = speed
 
-
-def right(time: int) -> None:
+def right(speed: float) -> None:
     ''' Drives right
-        Input: time [milliseconds]
+        Input: speed [0.0 - 1.0]
     '''
-    print(right_motor["direction"], left_motor["direction"])
+    right_motor_dir_pin.on()
+    left_motor_dir_pin.off()
+    right_motor_pwm_pin.value = speed
+    left_motor_pwm_pin.value = speed
+
+def stop() -> None:
+    ''' Stops the motors '''
+    right_motor_pwm_pin.value = 0
+    left_motor_pwm_pin.value = 0
+
+motor_init()
+while True:
+    forward(0.5)
+    sleep(2)
+    backward(0.5)
+    sleep(2)
+    stop()
+    sleep(2)
+    forward(1)
+    sleep(2)
+    break
     
