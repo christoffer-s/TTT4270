@@ -2,6 +2,13 @@ import json
 import math
 import time
 import networkx as nx
+import sys
+import os
+
+# Get the path of the parent directory (project_root)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Now you can import
 from python_code import gps_to_csv_call
 
 # ==========================================

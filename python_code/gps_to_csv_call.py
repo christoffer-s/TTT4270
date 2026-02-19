@@ -24,7 +24,7 @@ def get_gps():
 			msg = pynmea2.parse(x)
 #			if isInstance(msg, pynmea2.RMC): # and msg.status == 'A':
 #			data_csv.append([msg.latitude, msg.longitude, msg.speed_kph])
-			data_csv.append([msg.latitude, msg.longitude,0])
+			data_csv.append([msg.latitude, msg.longitude])
 		except pynmea2.ParseError as e:
 			print("ParseError")
 		except Exception as e:
