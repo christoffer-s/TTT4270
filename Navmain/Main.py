@@ -212,8 +212,8 @@ if __name__ == "__main__":
         exit()
         
     # 2. Definer ruten (Eksempel-koordinater på Gløshaugen)
-    min_start = (63.41809573255258, 10.402332799157428) 
-    mitt_maal = (63.41672421102855, 10.405400716816052)
+    min_start = (10.402332799157428, 63.41809573255258) 
+    mitt_maal = (10.405400716816052, 63.41672421102855)
     
     # 3. Bygg det matematiske kartet (G)
     G_kart = bygg_graf(kart_data)
