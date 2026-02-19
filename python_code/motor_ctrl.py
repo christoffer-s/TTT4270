@@ -67,12 +67,14 @@ def stop() -> None:
 motor_init()
 while True:
     forward(0.5)
-    sleep(2)
+    sleep(4)
+    stop()
+    sleep(4)
     backward(0.5)
-    sleep(2)
+    sleep(4)
     stop()
     sleep(2)
     forward(1)
-    sleep(2)
+    sleep(4)
     break
     
