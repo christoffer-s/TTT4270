@@ -4,6 +4,7 @@ import serial
 import pynmea2
 import csv
 
+
 ser = serial.Serial(
 	port='/dev/ttyAMA0',
 	baudrate = 9600,
