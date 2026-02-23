@@ -78,13 +78,13 @@ drive = Drive(right_motor, left_motor)
 while True:
     drive.drive(0.5, 0) #Kjør rett frem med halv fart
     sleep(3)
-    drive.drive(0.5, 0.5) #Kjør frem og sving til høyre
+    drive.drive(0.5, 0.1) #Kjør frem og sving til høyre
     sleep(3)
-    drive.drive(0.5, -0.5) #Kjør frem og sving til venstre
+    drive.drive(0.5, -0.1) #Kjør frem og sving til venstre
     sleep(3)
     drive.stop() #Stopp
     sleep(3)
-    drive.drive(-0.5, 0) #Kjør bakover med halv fart
+    drive.drive(-0.3, 0) #Kjør bakover med halv fart
     sleep(3)
     drive.stop() #Stopp
     sleep(3)
