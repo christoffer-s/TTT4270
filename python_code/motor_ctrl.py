@@ -5,7 +5,7 @@ Everything related to motor control
 
 On the motor driver board: 
     M1 = right motor
-    M3 = left motor
+    M2 = left motor
 
 '''
 class Motor:
@@ -26,7 +26,7 @@ class Motor:
 
 
 right_motor = Motor(6, 12) #Koble GPIO 6 til pin 4 på motor driver board, og GPIO 12 til pin 3
-left_motor = Motor(16, 13) #Koble GPIO 16 til pin 8 på motor driver board, og GPIO 13 til pin 5
+left_motor = Motor(16, 13) #Koble GPIO 16 til pin 12 på motor driver board, og GPIO 13 til pin 11
 
 class Drive:
     def __init__(self, right_motor, left_motor):
@@ -74,16 +74,3 @@ class Drive:
             
 
 drive = Drive(right_motor, left_motor)
-
-while True:
-    drive.drive(0.5, 0) #Kjør rett frem med halv fart
-    sleep(3)
-    drive.stop() #Stopp
-    sleep(3)
-    drive.drive(-0.5, 0) #Kjør bakover med halv fart
-    sleep(3)
-    drive.drive(-0.5, 0.2) #Kjør bakover med halv fart
-    sleep(3)
-    drive.stop() #Stopp
-    sleep(3)
-    break
