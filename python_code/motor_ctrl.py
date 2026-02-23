@@ -1,4 +1,5 @@
 from gpiozero import PWMOutputDevice, DigitalOutputDevice
+from time import sleep
 '''
 Everything related to motor control
 
@@ -44,17 +45,47 @@ class Drive:
     def backward(self):
         self.right_motor.backward(self.speed)
         self.left_motor.backward(self.speed)
-
-    def turn(self, direction, turn_ratio):
-        if direction.lower() == "left":
-            self.left_motor.forward(self.speed * turn_ratio) #turn_ratio between 0 and 1
-
-        elif direction.lower() == "right":
-            self.right_motor.forward(self.speed * turn_ratio)
     
+    def drive(self, forward_speed, turn_rate):
+        """
+        forward_speed: -1 to 1
+        turn_rate: -1 to 1 (negative = left, positive = right)
+        """
+        right = forward_speed - turn_rate
+        left  = forward_speed + turn_rate
+
+        # clamp mellom -1 og 1
+        right = max(-1, min(1, right))
+        left  = max(-1, min(1, left))
+
+        if right >= 0:
+            self.right_motor.forward(right)
+        else:
+            self.right_motor.backward(-right)
+        
+        if left >= 0:
+            self.left_motor.forward(left)
+        else:
+            self.left_motor.backward(-left)
+
     def stop(self):
         self.right_motor.stop()
         self.left_motor.stop()
             
 
 drive = Drive(right_motor, left_motor)
+
+while True:
+    drive.drive(0.5, 0) #Kjør rett frem med halv fart
+    sleep(3)
+    drive.drive(0.5, 0.5) #Kjør frem og sving til høyre
+    sleep(3)
+    drive.drive(0.5, -0.5) #Kjør frem og sving til venstre
+    sleep(3)
+    drive.stop() #Stopp
+    sleep(3)
+    drive.drive(-0.5, 0) #Kjør bakover med halv fart
+    sleep(3)
+    drive.stop() #Stopp
+    sleep(3)
+    break
