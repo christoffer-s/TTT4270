@@ -36,12 +36,12 @@ import nettside_data
 
 app = Flask(__name__)
 @app.route('/')
-def index_htmx():
+def index():
 	return render_template('index.html')
 
-@app.route('/get_data')
+@app.route('/data')
 def get_data():
-	return nettside_data.get_gps()
+	return jsonify(nettside_data.get_gps())
 
 if __name__ == '__main__':
 	app.run(debug=True, host='0.0.0.0')
