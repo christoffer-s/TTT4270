@@ -61,12 +61,12 @@ class Drive:
         if right >= 0:
             self.right_motor.forward(right)
         else:
-            self.right_motor.backward(-right)
+            self.right_motor.backward(abs(right))
         
         if left >= 0:
             self.left_motor.forward(left)
         else:
-            self.left_motor.backward(-left)
+            self.left_motor.backward(abs(left))
 
     def stop(self):
         self.right_motor.stop()
@@ -78,13 +78,11 @@ drive = Drive(right_motor, left_motor)
 while True:
     drive.drive(0.5, 0) #Kjør rett frem med halv fart
     sleep(3)
-    drive.drive(0.5, 0.1) #Kjør frem og sving til høyre
-    sleep(3)
-    drive.drive(0.5, -0.1) #Kjør frem og sving til venstre
-    sleep(3)
     drive.stop() #Stopp
     sleep(3)
-    drive.drive(-0.3, 0) #Kjør bakover med halv fart
+    drive.drive(-0.5, 0) #Kjør bakover med halv fart
+    sleep(3)
+    drive.drive(-0.5, 0.2) #Kjør bakover med halv fart
     sleep(3)
     drive.stop() #Stopp
     sleep(3)
