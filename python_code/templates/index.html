@@ -5,11 +5,14 @@
 	<title>Measurments</title>
 </head>
 <body>
-	<h1>GPS Data</h1>
-	<ul>
-		<li>Latitude: {{ measurements.Latitude }}</li>
-		<li>Longitude: {{ measurements.Longitude }}</li>
-		<li>Time: {{ measurements.Time }}</li>
-	</ul>
+    <form action="{{ url_for('index') }}" method="POST">
+        <h1>GPS Data</h1>
+	        <ul>
+		        <li>Latitude: {{ measurements.Latitude }}</li>
+		        <li>Longitude: {{ measurements.Longitude }}</li>
+		        <li>Time: {{ measurements.Time }}</li>
+	        </ul>
+    </form>
 </body>
 </html>
+

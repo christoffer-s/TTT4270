@@ -4,6 +4,7 @@ import serial
 import pynmea2
 import csv
 
+
 ser = serial.Serial(
 	port='/dev/ttyAMA0',
 	baudrate = 9600,
@@ -17,7 +18,7 @@ ser = serial.Serial(
 
 x=ser.readline().decode('utf-8', errors='ignore')
 
-def get_gps():
+def get_gps(form):
 	#data_csv = [["Latitude", "Longitude", "Time"]]
 	if x.startswith('$'):
 		try:

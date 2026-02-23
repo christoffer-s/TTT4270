@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
+import numpy as np
 import nettside_data
 
 #ser = serial.Serial(
@@ -34,10 +35,13 @@ import nettside_data
 
 
 app = Flask(__name__)
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-	data = nettside_data.get_gps()
-	return render_template('index.html', measurements=data)
+	if request.method == 'POST':
+		form = request.form
+		data = nettside_data.get_gps(form)
+		return render_template('index.html', measurements=data)
+	return render_template('index.html', measurements=nettside_data.get_gps())
 
 if __name__ == '__main__':
 	app.run(debug=True, host='0.0.0.0')
