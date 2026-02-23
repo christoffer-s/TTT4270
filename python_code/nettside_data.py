@@ -18,7 +18,7 @@ ser = serial.Serial(
 
 x=ser.readline().decode('utf-8', errors='ignore')
 
-def get_gps(form):
+def get_gps():
 	#data_csv = [["Latitude", "Longitude", "Time"]]
 	if x.startswith('$'):
 		try:

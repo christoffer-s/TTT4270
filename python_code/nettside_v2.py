@@ -35,13 +35,13 @@ import nettside_data
 
 
 app = Flask(__name__)
-@app.route('/', methods=['GET', 'POST'])
-def index():
-	if request.method == 'POST':
-		form = request.form
-		data = nettside_data.get_gps(form)
-		return render_template('index.html', measurements=data)
-	return render_template('index.html', measurements=nettside_data.get_gps())
+@app.route('/')
+def index_htmx():
+	return render_template('index.html')
+
+@app.route('/get_data')
+def get_data():
+	return nettside_data.get_gps()
 
 if __name__ == '__main__':
 	app.run(debug=True, host='0.0.0.0')

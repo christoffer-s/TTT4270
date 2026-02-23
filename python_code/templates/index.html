@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
@@ -15,4 +15,21 @@
     </form>
 </body>
 </html>
-
+ -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Measurments</title>
+    <!-- Include HTMX library -->
+    <script src="https://unpkg.com"></script>
+</head>
+<body>
+    <h1>GPS Data</h1>
+    <!-- The div will be updated every 2 seconds by requesting data from /get_random_value -->
+    <div hx-get="/get_data" hx-trigger="every 2s">
+		<li>Latitude: {{ hx-get.Latitude }}</li>
+		<li>Longitude: {{ hx-get.Longitude }}</li>
+        <li>Time: {{ hx-get.Time }}</li>
+    </div>
+</body>
+</html>
