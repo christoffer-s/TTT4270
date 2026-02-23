@@ -1,35 +1,26 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Measurments</title>
-</head>
-<body>
-    <form action="{{ url_for('index') }}" method="POST">
-        <h1>GPS Data</h1>
-	        <ul>
-		        <li>Latitude: {{ measurements.Latitude }}</li>
-		        <li>Longitude: {{ measurements.Longitude }}</li>
-		        <li>Time: {{ measurements.Time }}</li>
-	        </ul>
-    </form>
-</body>
-</html>
- -->
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Measurments</title>
-    <!-- Include HTMX library -->
-    <script src="https://unpkg.com"></script>
+    <title>RPi GPS</title>
+    <script>
+        // Function to fetch data from Flask
+        function updateData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('Time').innerText = data.Time;
+                    document.getElementById('Latitude').innerText = data.Latitude;
+                    document.getElementById('Longitude').innerText = data.Longitude;
+                });
+        }
+        // Update data every 1000ms (1 second)
+        setInterval(updateData, 1000);
+    </script>
 </head>
-<body>
-    <h1>GPS Data</h1>
-    <!-- The div will be updated every 2 seconds by requesting data from /get_random_value -->
-    <div hx-get="/get_data" hx-trigger="every 2s">
-		<li>Latitude: {{ hx-get.Latitude }}</li>
-		<li>Longitude: {{ hx-get.Longitude }}</li>
-        <li>Time: {{ hx-get.Time }}</li>
-    </div>
+<body onload="updateData()">
+    <h1>Real-time Data</h1>
+    <p>Time: <span id="Time">--</span></p>
+    <p>Latitude: <span id="Longitude">--</span></p>
+    <p>Longitude: <span id="Latitude">--</span></p>
 </body>
 </html>
