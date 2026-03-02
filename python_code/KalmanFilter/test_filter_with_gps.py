@@ -10,6 +10,27 @@ from filterpy.kalman import KalmanFilter
 import matplotlib.pyplot as plt
 import numpy.random as random
 import copy
+import pyproj
+
+
+P = pyproj.Proj(proj='utm', zone=31, ellps='WGS84', preserve_units=True)
+G = pyproj.Geod(ellps='WGS84')
+
+# def gps_to_LonLat(gpsLon,gpsLat):
+
+#     return 0
+
+
+def LonLat_To_XY(Lon, Lat):
+    return P(Lon, Lat)    
+
+def XY_To_LonLat(x,y):
+    return P(x, y, inverse=True)    
+
+def distance(Lat1, Lon1, Lat2, Lon2):
+    return G.inv(Lon1, Lat1, Lon2, Lat2)[2]
+
+
 
 ser = serial.Serial(
 	port='/dev/ttyAMA0',
@@ -39,9 +60,15 @@ def get_gps():
 		except Exception as e:
 			print(f"Error {e}")
 
-	time.sleep(0.1)
+	# time.sleep(0.1)
 	return np.array([0,0])
 # ------------------------------------------------------------------
+
+
+
+def gps_to_XY():
+	gps = get_gps()
+	return list(LonLat_To_XY(gps[1],gps[0]))
 
 distance = 111111000 # 111.111km to calculate dx and dy
 dt = 0.1
@@ -50,7 +77,11 @@ kf = KalmanFilter (dim_x=4, dim_z=2)
 # lager kalmanfilter klasse med 4 dimensjons output, x_pos, y_pos
 # skal ha inn 2 sensormålinger, gps: latitude, longitude
 
-kf.x = np.array([[0,0,0,0]]).T # x, v_x, y, v_y
+
+
+initPos = gps_to_XY()
+kf.x = np.array([[initPos[0],initPos[1],0,0]]).T # x, y, v_x, y, v_y
+
 
 kf.F = np.array([[1, dt, 0, 0],
                 [0,1,0,0],
@@ -110,10 +141,10 @@ def kalmanFilter_update(KF, posisjon): # Funksjon for å oppdatere filter og hen
 		print(f"Error catched: {e}")
 		return 1
 	
-print(get_gps())
+
 
 while True:
-	pos = get_gps()
+	pos = gps_to_XY()
 	kalmanFilter_update(kf, pos)
 	print(kf.x)
 
