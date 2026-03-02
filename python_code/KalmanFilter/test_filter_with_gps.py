@@ -12,7 +12,7 @@ import numpy.random as random
 import copy
 import pyproj
 import pymap3d as pm
-from Navmain import Main2
+import math
 
 P = pyproj.Proj(proj='utm', zone=31, ellps='WGS84', preserve_units=True)
 G = pyproj.Geod(ellps='WGS84')
@@ -32,13 +32,30 @@ def distance(Lat1, Lon1, Lat2, Lon2):
     return G.inv(Lon1, Lat1, Lon2, Lat2)[2]
 
 
+ORIGO_LON = 10.402332799157428
+ORIGO_LAT = 63.41809573255258
 
-# 1. Define the origin (0,0,0)
-lat0, lon0, h0 = 63.418112, 10.402374 , 0  
+def lon_lat_til_xy(lon, lat):
+    """Konverterer GPS-koordinater til X (meter mot øst) og Y (meter mot nord) fra Origo."""
+    R = 6371000  # Jordens radius i meter
+    
+    lat_rad = math.radians(lat)
+    origo_lat_rad = math.radians(ORIGO_LAT)
+    delta_lon = math.radians(lon - ORIGO_LON)
+    delta_lat = math.radians(lat - ORIGO_LAT)
+    
+    # Flat-jord tilnærming for små avstander
+    x = R * delta_lon * math.cos(origo_lat_rad)
+    y = R * delta_lat
+    
+    # Runder av til 3 desimaler (millimeter-presisjon) for å unngå flyttalls-rot i grafen
+    return round(x, 3), round(y, 3)
+
+ 
 
 def gps_to_enu():
 	gps = get_gps()
-	x, y = Main2.lon_lat_til_xy(gps[1], gps[0])
+	x, y = lon_lat_til_xy(gps[1], gps[0])
 	return x, y
 # Output: (e, n, u) in meters, where (0,0,0) is (lat0, lon0, h0)
 
