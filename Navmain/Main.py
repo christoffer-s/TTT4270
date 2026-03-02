@@ -73,7 +73,7 @@ def finn_korteste_vei(G, start_pos, slutt_pos):
     try:
         vei = nx.shortest_path(G, source=start_node, target=slutt_node, weight='weight')
         return vei
-    except nx.NetworkXNoPath:
+    except nx.NetworkXNoPath:   
         print("Feil: Fant ingen vei mellom disse punktene.")
         return None
 

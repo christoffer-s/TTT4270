@@ -1,0 +1,259 @@
+import json
+import math
+import time
+import networkx as nx
+import sys
+import os
+
+# Get the path of the parent directory (project_root)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Now you can import
+from python_code import gps_to_csv_call
+
+# ==========================================
+# 0. DEFINISJON AV ORIGO (LOKALT KOORDINATSYSTEM)
+# ==========================================
+# Vi setter origo (0,0) til å være startpunktet på Gløshaugen.
+# X-aksen går Øst/Vest. Y-aksen går Nord/Sør.
+ORIGO_LON = 10.402332799157428
+ORIGO_LAT = 63.41809573255258
+
+def lon_lat_til_xy(lon, lat):
+    """Konverterer GPS-koordinater til X (meter mot øst) og Y (meter mot nord) fra Origo."""
+    R = 6371000  # Jordens radius i meter
+    
+    lat_rad = math.radians(lat)
+    origo_lat_rad = math.radians(ORIGO_LAT)
+    delta_lon = math.radians(lon - ORIGO_LON)
+    delta_lat = math.radians(lat - ORIGO_LAT)
+    
+    # Flat-jord tilnærming for små avstander
+    x = R * delta_lon * math.cos(origo_lat_rad)
+    y = R * delta_lat
+    
+    # Runder av til 3 desimaler (millimeter-presisjon) for å unngå flyttalls-rot i grafen
+    return round(x, 3), round(y, 3)
+
+# ==========================================
+# 1. MATEMATIKK OG KART-HÅNDTERING (NÅ I X/Y METER!)
+# ==========================================
+
+def beregn_avstand(x1, y1, x2, y2):
+    """Beregner avstand i meter (vanlig Pytagoras i et flatt rutenett)."""
+    return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+
+def beregn_vinkel_til_maal(x1, y1, x2, y2):
+    """Beregner vinkel til mål i grader (0=Nord, 90=Øst, 180=Sør, 270=Vest)."""
+    dx = x2 - x1
+    dy = y2 - y1
+    
+    # math.atan2(dx, dy) gir vinkel med 0 grader rett opp (Y-aksen/Nord).
+    vinkel = math.degrees(math.atan2(dx, dy))
+    return (vinkel + 360) % 360
+
+def bygg_graf(geojson_data):
+    """Konverterer GeoJSON til en navigerbar graf basert på X og Y meter."""
+    G = nx.Graph()
+    for feature in geojson_data['features']:
+        if feature['geometry']['type'] == 'LineString':
+            coords = feature['geometry']['coordinates']
+            for i in range(len(coords) - 1):
+                # Hent GPS, konverter til (X, Y)
+                lon1, lat1 = coords[i]
+                lon2, lat2 = coords[i+1]
+                
+                p1 = lon_lat_til_xy(lon1, lat1)
+                p2 = lon_lat_til_xy(lon2, lat2)
+                
+                avstand = beregn_avstand(p1[0], p1[1], p2[0], p2[1])
+                
+                # Vi kan også forhåndsregne ideell retning for linjen og lagre det!
+                ideell_vinkel = beregn_vinkel_til_maal(p1[0], p1[1], p2[0], p2[1])
+                
+                G.add_edge(p1, p2, weight=avstand, ideal_heading=ideell_vinkel)
+    return G
+
+def finn_naermeste_node(G, posisjon_xy):
+    """Finner det X/Y-punktet på grafen som er nærmest bilen."""
+    naermeste_node = None
+    min_avstand = float('inf')
+    for node in G.nodes():
+        avstand = beregn_avstand(posisjon_xy[0], posisjon_xy[1], node[0], node[1])
+        if avstand < min_avstand:
+            min_avstand = avstand
+            naermeste_node = node
+    return naermeste_node
+
+def finn_korteste_vei(G, start_xy, slutt_xy):
+    """Finner korteste vei fra start til slutt ved hjelp av Dijkstras algoritme."""
+    start_node = finn_naermeste_node(G, start_xy)
+    slutt_node = finn_naermeste_node(G, slutt_xy)
+    
+    try:
+        vei = nx.shortest_path(G, source=start_node, target=slutt_node, weight='weight')
+        return vei
+    except nx.NetworkXNoPath:   
+        print("Feil: Fant ingen vei mellom disse punktene.")
+        return None
+
+# ==========================================
+# 2. HARDWARE / SENSORER
+# ==========================================
+
+def les_sensorer_og_kalman():
+    """Henter bilens estimerte posisjon i meter (X,Y) og retning."""
+    # Henter rå-GPS fra modulen din
+    pos = gps_to_csv_call.get_gps()
+    raw_lon = pos[1][1]
+    raw_lat = pos[1][0]
+    
+    # Kalman-filteret/Systemet vårt konverterer dette til X, Y i meter fra Origo
+    estimert_x, estimert_y = lon_lat_til_xy(raw_lon, raw_lat)
+    
+    estimert_retning = 90.0 # Bilen peker mot Øst
+    
+    return (estimert_x, estimert_y), estimert_retning
+
+def les_tof_sensor():
+    """Leser TOF-sensor og returnerer avstand til hindring i meter."""
+    return 10.0 # 10 meter = fri vei
+
+def styr_motorer(fart, sving_vinkel):
+    """Sender fart og styrevinkel til motorkontrolleren."""
+    print(f"[MOTOR] Fart: {fart} | Styrevinkel: {sving_vinkel:.1f} grader")
+
+def brems_bilen():
+    """Stopper motorene fullstendig."""
+    print("[MOTOR] 🛑 Bremsene aktivert. Bilen har stoppet.")
+
+# ==========================================
+# 3. DYNAMISK RUTEPLANLEGGING (Hindringer)
+# ==========================================
+
+def beregn_ny_rute(G, naa_pos_xy, neste_waypoint_xy, slutt_maal_xy):
+    """Klipper den blokkerte veien ut av grafen og finner ny rute."""
+    naermeste_node_naa = finn_naermeste_node(G, naa_pos_xy)
+    neste_node = tuple(neste_waypoint_xy) 
+    
+    # 1. Fjern strekningen fra grafen
+    try:
+        if G.has_edge(naermeste_node_naa, neste_node):
+            G.remove_edge(naermeste_node_naa, neste_node)
+            print(f"[RUTING] ✂️ Slettet blokkert vei mellom {naermeste_node_naa} og {neste_node}")
+    except Exception as e:
+        print(f"[RUTING] Kunne ikke fjerne vei fra grafen: {e}")
+        
+    # 2. Finn ny rute
+    slutt_node = finn_naermeste_node(G, slutt_maal_xy)
+    try:
+        ny_vei = nx.shortest_path(G, source=naermeste_node_naa, target=slutt_node, weight='weight')
+        return ny_vei
+    except nx.NetworkXNoPath:
+        print("[RUTING] 🚨 KRITISK: Ingen andre veier til målet! Bilen er innestengt.")
+        return None
+
+# ==========================================
+# 4. HOVEDKONTROLLØKKEN (Path Tracking)
+# ==========================================
+
+def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
+    """Kjører bilen langs ruten, sjekker hindringer og styrer mot målet."""
+    naavaerende_waypoint_indeks = 1 
+    
+    print("\n--- STARTER SELVKJØRING ---")
+    
+    while naavaerende_waypoint_indeks < len(waypoints_xy):
+        
+        # 1. Hent posisjon (NÅ I X,Y METER) og retning
+        estimert_pos_xy, estimert_retning = les_sensorer_og_kalman()
+        
+        # 2. Sjekk for hindringer
+        hindring_avstand = les_tof_sensor()
+        
+        if hindring_avstand < 0.5: # 50 cm grense
+            print("\n🚨 HINDRING OPPDAGET! Stopper bilen.")
+            brems_bilen()
+            time.sleep(1) 
+            
+            print("Planlegger ny rute rundt hindringen...")
+            neste_punkt_xy = waypoints_xy[naavaerende_waypoint_indeks]
+            nye_waypoints = beregn_ny_rute(G, estimert_pos_xy, neste_punkt_xy, slutt_maal_xy)
+            
+            if nye_waypoints:
+                print(f"✅ Fant ny rute med {len(nye_waypoints)} punkter!")
+                waypoints_xy = nye_waypoints 
+                naavaerende_waypoint_indeks = 1 
+                continue 
+            else:
+                print("❌ Bilen kan ikke fortsette. Ruten er totalt blokkert.")
+                break 
+
+        # 3. Sjekk progresjon mot neste (X, Y)-punkt
+        maal_pos_xy = waypoints_xy[naavaerende_waypoint_indeks]
+        avstand_til_maal = beregn_avstand(estimert_pos_xy[0], estimert_pos_xy[1], maal_pos_xy[0], maal_pos_xy[1])
+        
+        if avstand_til_maal < 2.0:
+            print(f"📍 Nådd waypoint {naavaerende_waypoint_indeks}! Bytter til neste.")
+            naavaerende_waypoint_indeks += 1
+            
+            if naavaerende_waypoint_indeks >= len(waypoints_xy):
+                print("🏁 Mål nådd! Bilen parkerer.")
+                brems_bilen()
+                break
+            
+            maal_pos_xy = waypoints_xy[naavaerende_waypoint_indeks]
+            
+        # 4. Regn ut styrevinkel mot (X, Y)
+        maal_vinkel = beregn_vinkel_til_maal(estimert_pos_xy[0], estimert_pos_xy[1], maal_pos_xy[0], maal_pos_xy[1])
+        vinkel_feil = maal_vinkel - estimert_retning
+        
+        # Normaliser for å finne korteste vei å svinge
+        if vinkel_feil > 180:
+            vinkel_feil -= 360
+        elif vinkel_feil < -180:
+            vinkel_feil += 360
+            
+        # 5. Send til motor
+        styr_motorer("Normal", vinkel_feil)
+        
+        # 6. Kontroller hastigheten på løkken (10 Hz)
+        time.sleep(0.1) 
+
+# ==========================================
+# 5. START AV PROGRAMMET
+# ==========================================
+
+if __name__ == "__main__":
+    print("Initialiserer systemet (Kartesisk XY)...")
+    
+    # 1. Last inn kart
+    try:
+        with open('LinjemapGløsV2.geojson', 'r') as fil:
+            kart_data = json.load(fil)
+    except FileNotFoundError:
+        print("Kritisk feil: Fant ikke 'LinjemapGløsV2.geojson'.")
+        exit()
+        
+    # 2. Definer ruten med rå GPS, og konverter til Lokalt X/Y
+    start_lon_lat = (10.402332799157428, 63.41809573255258) 
+    maal_lon_lat = (10.405400716816052, 63.41672421102855)
+    
+    min_start_xy = lon_lat_til_xy(start_lon_lat[0], start_lon_lat[1]) 
+    mitt_maal_xy = lon_lat_til_xy(maal_lon_lat[0], maal_lon_lat[1])
+    
+    # 3. Bygg det matematiske kartet (Nodes er nå X, Y meter fra Origo!)
+    G_kart = bygg_graf(kart_data)
+    
+    # 4. Finn den første ruten
+    waypoints_xy = finn_korteste_vei(G_kart, min_start_xy, mitt_maal_xy)
+    
+    if waypoints_xy:
+        print(f"✅ Rute planlagt vellykket! Ruten består av {len(waypoints_xy)} punkter.")
+        # Print gjerne ut waypoints for å sjekke at de er i X/Y meter:
+        # print("Waypoints (X, Y):", waypoints_xy)
+        
+        # 5. Start bilen
+        kjor_bil_til_maal(G_kart, waypoints_xy, mitt_maal_xy)
+    else:
+        print("Klarte ikke å planlegge ruten. Avslutter.")
