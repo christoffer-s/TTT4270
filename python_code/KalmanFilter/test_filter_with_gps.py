@@ -12,6 +12,7 @@ import numpy.random as random
 import copy
 import pyproj
 import pymap3d as pm
+from Navmain import Main2
 
 P = pyproj.Proj(proj='utm', zone=31, ellps='WGS84', preserve_units=True)
 G = pyproj.Geod(ellps='WGS84')
@@ -37,9 +38,11 @@ lat0, lon0, h0 = 63.418112, 10.402374 , 0
 
 def gps_to_enu():
 	gps = get_gps()
-	e, n, u = pm.geodetic2enu(gps[0], gps[1], 0, lat0, lon0, h0)
-	return e, n
+	x, y = Main2.lon_lat_til_xy(gps[1], gps[0])
+	return x, y
 # Output: (e, n, u) in meters, where (0,0,0) is (lat0, lon0, h0)
+
+
 
 
 
