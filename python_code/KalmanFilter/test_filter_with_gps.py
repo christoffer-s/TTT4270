@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy.random as random
 import copy
 import pyproj
-
+import pymap3d as pm
 
 P = pyproj.Proj(proj='utm', zone=31, ellps='WGS84', preserve_units=True)
 G = pyproj.Geod(ellps='WGS84')
@@ -29,6 +29,17 @@ def XY_To_LonLat(x,y):
 
 def distance(Lat1, Lon1, Lat2, Lon2):
     return G.inv(Lon1, Lat1, Lon2, Lat2)[2]
+
+
+
+# 1. Define the origin (0,0,0)
+lat0, lon0, h0 = 63.418112, 10.402374 , 0  
+
+def gps_to_enu():
+	gps = get_gps()
+	e, n, u = pm.geodetic2enu(gps[0], gps[1], 0, lat0, lon0, h0)
+	return e, n
+# Output: (e, n, u) in meters, where (0,0,0) is (lat0, lon0, h0)
 
 
 
@@ -79,7 +90,7 @@ kf = KalmanFilter (dim_x=4, dim_z=2)
 
 
 
-initPos = gps_to_XY()
+initPos = gps_to_enu()
 kf.x = np.array([[initPos[0],initPos[1],0,0]]).T # x, y, v_x, y, v_y
 
 
@@ -144,7 +155,7 @@ def kalmanFilter_update(KF, posisjon): # Funksjon for å oppdatere filter og hen
 
 
 while True:
-	pos = gps_to_XY()
+	pos = gps_to_enu()
 	kalmanFilter_update(kf, pos)
 	print(kf.x)
 
