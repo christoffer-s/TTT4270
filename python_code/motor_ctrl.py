@@ -1,10 +1,11 @@
 from gpiozero import PWMOutputDevice, DigitalOutputDevice
+from time import sleep
 '''
 Everything related to motor control
 
 On the motor driver board: 
     M1 = right motor
-    M3 = left motor
+    M2 = left motor
 
 '''
 class Motor:
@@ -25,7 +26,7 @@ class Motor:
 
 
 right_motor = Motor(6, 12) #Koble GPIO 6 til pin 4 på motor driver board, og GPIO 12 til pin 3
-left_motor = Motor(16, 13) #Koble GPIO 16 til pin 8 på motor driver board, og GPIO 13 til pin 5
+left_motor = Motor(16, 13) #Koble GPIO 16 til pin 12 på motor driver board, og GPIO 13 til pin 11
 
 class Drive:
     def __init__(self, right_motor, left_motor):
@@ -44,14 +45,29 @@ class Drive:
     def backward(self):
         self.right_motor.backward(self.speed)
         self.left_motor.backward(self.speed)
-
-    def turn(self, direction, turn_ratio):
-        if direction.lower() == "left":
-            self.left_motor.forward(self.speed * turn_ratio) #turn_ratio between 0 and 1
-
-        elif direction.lower() == "right":
-            self.right_motor.forward(self.speed * turn_ratio)
     
+    def drive(self, forward_speed, turn_rate):
+        """
+        forward_speed: -1 to 1
+        turn_rate: -1 to 1 (negative = left, positive = right)
+        """
+        right = forward_speed - turn_rate
+        left  = forward_speed + turn_rate
+
+        # clamp mellom -1 og 1
+        right = max(-1, min(1, right))
+        left  = max(-1, min(1, left))
+
+        if right >= 0:
+            self.right_motor.forward(right)
+        else:
+            self.right_motor.backward(abs(right))
+        
+        if left >= 0:
+            self.left_motor.forward(left)
+        else:
+            self.left_motor.backward(abs(left))
+
     def stop(self):
         self.right_motor.stop()
         self.left_motor.stop()
