@@ -1,26 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>RPi GPS</title>
-    <script>
-        // Function to fetch data from Flask
-        function updateData() {
-            fetch('/data')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('Time').innerText = data.Time;
-                    document.getElementById('Latitude').innerText = data.Latitude;
-                    document.getElementById('Longitude').innerText = data.Longitude;
-                });
+    <title>Live GPS</title>
+    <meta charset="utf-8" />
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet"
+     href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+    <style>
+        #map {
+            height: 100vh;
         }
-        // Update data every 1000ms (1 second)
-        setInterval(updateData, 1000);
-    </script>
+    </style>
 </head>
-<body onload="updateData()">
-    <h1>Real-time Data</h1>
-    <p>Time: <span id="Time">--</span></p>
-    <p>Latitude: <span id="Longitude">--</span></p>
-    <p>Longitude: <span id="Latitude">--</span></p>
+<body>
+
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    var map = L.map('map').setView([63.4305, 10.3951], 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    var marker = L.marker([63.4305, 10.3951]).addTo(map);
+
+    function updateGPS() {
+        fetch("/gps")
+            .then(response => response.json())
+            .then(data => {
+                marker.setLatLng([data.lat, data.lon]);
+                map.setView([data.lat, data.lon]);
+            });
+    }
+
+    setInterval(updateGPS, 1000);
+</script>
+
 </body>
 </html>
