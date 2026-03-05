@@ -28,7 +28,13 @@
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    var marker = L.marker([63.4305, 10.3951]).addTo(map);
+    var boatIcon = L.icon({
+        iconUrl: "{{ url_for('static', filename='boatIcon.png') }}",
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
+    });
+
+    var marker = L.marker([63.4305, 10.3951], { icon: boatIcon }).addTo(map);
 
     function updateGPS() {
         fetch("/gps")
