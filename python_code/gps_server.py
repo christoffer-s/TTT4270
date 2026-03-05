@@ -10,24 +10,24 @@ app = Flask(__name__)
 nyeste_posisjon = {"lat": 63.4305, "lon": 10.3951}
 
 def lytt_til_gps():
-    """Kjører i bakgrunnen og oppdaterer posisjonen når vi har signal."""
-    try:
-        # Kobler til gpsd
-        session = gps.gps(mode=gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
-        
-        while True:
-            pakke = session.next()
-            if getattr(pakke, 'class', '') == 'TPV':
-                lat = getattr(pakke, 'lat', None)
-                lon = getattr(pakke, 'lon', None)
-                
-                # Bare oppdater hvis vi faktisk får gyldige tall fra satellittene
-                if lat is not None and lon is not None:
-                    nyeste_posisjon['lat'] = lat
-                    nyeste_posisjon['lon'] = lon
+    """Kjører i bakgrunnen og oppdaterer posisjonen når vi har signal. Nekter å gi opp."""
+    while True: # <--- Ny ytre løkke!
+        try:
+            session = gps.gps(mode=gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
+            
+            # Går kontinuerlig gjennom pakkene etter hvert som de kommer
+            for pakke in session: 
+                if getattr(pakke, 'class', '') == 'TPV':
+                    lat = getattr(pakke, 'lat', None)
+                    lon = getattr(pakke, 'lon', None)
                     
-    except Exception as e:
-        print(f"Feil med GPS-lesing: {e}")
+                    if lat is not None and lon is not None:
+                        nyeste_posisjon['lat'] = lat
+                        nyeste_posisjon['lon'] = lon
+                        
+        except Exception as e:
+            print(f"Mistet kontakt med gpsd. Prøver på nytt om 5 sekunder... Feil: {e}")
+            time.sleep(5) # Vent litt før vi prøver å koble til igjen
 
 # --- Webserver-ruter ---
 
