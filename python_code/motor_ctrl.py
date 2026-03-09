@@ -5,7 +5,7 @@ Everything related to motor control
 
 On the motor driver board: 
     M1 = right motor
-    M2 = left motor
+    M3 = left motor
 
 '''
 class Motor:
@@ -26,7 +26,7 @@ class Motor:
 
 
 right_motor = Motor(6, 12) #Koble GPIO 6 til pin 4 på motor driver board, og GPIO 12 til pin 3
-left_motor = Motor(16, 13) #Koble GPIO 16 til pin 12 på motor driver board, og GPIO 13 til pin 11
+left_motor = Motor(16, 13) #Koble GPIO 16 til pin 8 på motor driver board, og GPIO 13 til pin 5
 
 class Drive:
     def __init__(self, right_motor, left_motor):
