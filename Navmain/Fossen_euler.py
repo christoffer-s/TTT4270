@@ -119,7 +119,6 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     theta_ins = theta_ins + h * (Rot.from_euler('zyx',[theta_ins[0],theta_ins[1]]) @ w_ins)
 
     x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
-    return x_ins, P_prd
 
 # How to initialize ins
 # p_ins = np.array([0, 0, 0]).T

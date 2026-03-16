@@ -113,14 +113,14 @@ def les_sensorer_og_kalman():
     raw_lat = pos[1][0]
     gps_x, gps_y = lon_lat_til_xy(raw_lon, raw_lat)
 
-    y_pos = [gps_x, gps_y, 0]
+    y_pos = np.array([gps_x, gps_y, 0])
     #AKSELEROMETER DATA:
     
     f_imu, w_imu = acc.IMU()
 
     # Kalman-filteret/Systemet vårt konverterer dette til X, Y i meter fra Origo
 
-    x_ins, P_prd = Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
+    Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     
     # estimert_retning = 90.0 # Bilen peker mot Øst
     
@@ -235,7 +235,7 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
 # 5. START AV PROGRAMMET
 # ==========================================
 
-# How to initialize ins
+# Initialize ins
 p_ins = np.array([0, 0, 0]).T
 v_ins = np.array([0, 0, 0]).T
 b_acc_ins = np.array([0, 0, 0]).T
@@ -245,15 +245,13 @@ x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
 
 Rd = np.diag([1, 1, 1,  1, 1, 1,]) #pos, euler_angles
 Qd = np.diag([1, 1, 1,  1, 1, 1,  10, 10, 10,  0.01, 0.01, 0.01])
+P_prd = np.zeros(15)
 
 h = 1/10 # Slow rate
 
 if __name__ == "__main__":
     print("Initialiserer systemet (Kartesisk XY)...")
     
-    
-
-
     # 1. Last inn kart
     try:
         with open('LinjemapGløsV2.geojson', 'r') as fil:
