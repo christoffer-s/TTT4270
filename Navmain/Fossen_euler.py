@@ -51,7 +51,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     w_ins = w_imu - b_ars_ins
 
     # Normalized specific force
-    v01 = np.array(0,0,-1).T
+    v01 = np.array([0,0,-1]).T
     v1 = f_ins/np.linalg.norm(f_ins)
 
     A = np.array([[O3, I3, O3, O3, O3],
