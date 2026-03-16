@@ -31,7 +31,7 @@ def get_gps():
 		except Exception as e:
 			print(f"Error {e}")
 
-	data_csv.append[0,0]
+	data_csv.append([0,0])
 		# time.sleep(0.1)
 	
 	# file_path = 'gps_data.csv'
