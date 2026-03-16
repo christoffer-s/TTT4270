@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Now you can import
 from python_code import gps_to_csv_call
-
+from python_code.KalmanFilter import skew as sk
 from python_code.KalmanFilter import Fossen_euler
 from python_code import acc
 
