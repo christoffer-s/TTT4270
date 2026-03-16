@@ -36,7 +36,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     b_ars_ins = x_ins[4]
 
     # Gravity vector
-    g_n = np.array(0,0, 9.81).T
+    g_n = np.array([0,0, 9.81]).T
 
     # Constants
     O3 = np.zeros((3,3))
