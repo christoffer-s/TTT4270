@@ -60,7 +60,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
          [O3, O3, O3, -sk.skew(w_ins), -I3],
          [O3, O3, O3, O3, -(1/T_ars)*I3]])
     
-    Ad = expm(A @ h)
+    Ad = expm(A * h)
 
     if y_pos != None:
         Cd = np.array([[I3, O3, O3, O3, O3],
