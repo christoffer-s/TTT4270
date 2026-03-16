@@ -26,7 +26,7 @@ import skew as sk
 
 def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=None):
     T_acc = 1000
-    T_ars = 500
+    T_ars = 500 # Dobbelt sjekk disse
 
     # ESKF states and matrices
     p_ins = x_ins[0]
