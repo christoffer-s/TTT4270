@@ -1,0 +1,10 @@
+pk+1 = pk + dt*vk + 
+vk+1 = vk + dt*(ak+bk)
+bk+1 = bk
+
+yk = pk
+
+x = atan2 (vk[2],vk[1])
+
+https://github.com/cybergalactic/MSS/tree/master/INS
+Euler fil i functions

@@ -18,7 +18,7 @@ ser = serial.Serial(
 x=ser.readline().decode('utf-8', errors='ignore')
 
 def get_gps():
-	data_csv = [["Latitude", "Longitude", "Velocity"]]
+	data_csv = [["Latitude", "Longitude"]]
 	if x.startswith('$'):
 		try:
 			msg = pynmea2.parse(x)

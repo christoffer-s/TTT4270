@@ -4,12 +4,17 @@ import time
 import networkx as nx
 import sys
 import os
+import numpy as np
+
 
 # Get the path of the parent directory (project_root)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Now you can import
 from python_code import gps_to_csv_call
+
+from python_code.KalmanFilter import Fossen_euler
+from python_code import acc
 
 # ==========================================
 # 0. DEFINISJON AV ORIGO (LOKALT KOORDINATSYSTEM)
@@ -107,13 +112,20 @@ def les_sensorer_og_kalman():
     pos = gps_to_csv_call.get_gps()
     raw_lon = pos[1][1]
     raw_lat = pos[1][0]
+    gps_x, gps_y = lon_lat_til_xy(raw_lon, raw_lat)
+
+    y_pos = [gps_x, gps_y, 0]
+    #AKSELEROMETER DATA:
     
+    f_imu, w_imu = acc.IMU()
+
     # Kalman-filteret/Systemet vårt konverterer dette til X, Y i meter fra Origo
-    estimert_x, estimert_y = lon_lat_til_xy(raw_lon, raw_lat)
+
+    x_ins, P_prd = Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     
-    estimert_retning = 90.0 # Bilen peker mot Øst
+    # estimert_retning = 90.0 # Bilen peker mot Øst
     
-    return (estimert_x, estimert_y), estimert_retning
+    return (x_ins[0][0], x_ins[0][1]), x_ins[3][2]
 
 def les_tof_sensor():
     """Leser TOF-sensor og returnerer avstand til hindring i meter."""
@@ -224,9 +236,25 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
 # 5. START AV PROGRAMMET
 # ==========================================
 
+# How to initialize ins
+p_ins = np.array([0, 0, 0]).T
+v_ins = np.array([0, 0, 0]).T
+b_acc_ins = np.array([0, 0, 0]).T
+theta_ins = np.array([0, 0, 0]).T
+b_ars_ins = np.array([0, 0, 0]).T
+x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
+
+Rd = np.diag([1, 1, 1,  1, 1, 1,]) #pos, euler_angles
+Qd = np.diag([1, 1, 1,  1, 1, 1,  10, 10, 10,  0.01, 0.01, 0.01])
+
+h = 1/10 # Slow rate
+
 if __name__ == "__main__":
     print("Initialiserer systemet (Kartesisk XY)...")
     
+    
+
+
     # 1. Last inn kart
     try:
         with open('LinjemapGløsV2.geojson', 'r') as fil:

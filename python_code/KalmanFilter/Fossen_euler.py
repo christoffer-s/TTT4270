@@ -8,13 +8,13 @@ import skew as sk
 # %   x_ins[k] : INS state vector at step k, includes position, velocity,
 # %              accelerometer biases, attitude (Euler angles), and gyro biases.
 # %   P_prd[k] : 15x15 covariance matrix of the prediction step.
-# %   mu       : Latitude in radians, used to calculate Earth's gravity vector.
+# %   
 # %   h        : Sampling time in seconds.
 # %   Qd, Rd   : Process and measurement noise covariance matrices for the
 # %              Kalman filter.
 # %   f_imu[k] : Specific force measurements from the IMU.
 # %   w_imu[k] : Angular rate measurements from the IMU.
-# %   y_psi[k] : Fast compass measurement (yaw angle).
+# %   
 # %   y_pos[k] : Slow position measurements aids the filter.
 # %   y_vel[k] : (Optionally) Slow velocity measurements aids the filter.
 
@@ -24,7 +24,7 @@ import skew as sk
 
 
 
-def updateKalmanFilter(x_ins, P_prd, mu, h, Qd, Rd, f_imu, w_imu, psi, y_pos=None, y_vel=None):
+def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=None):
     T_acc = 1000
     T_ars = 500
 
@@ -89,7 +89,7 @@ def updateKalmanFilter(x_ins, P_prd, mu, h, Qd, Rd, f_imu, w_imu, psi, y_pos=Non
         # Estimate error: eps[k]
         eps_pos = y_pos - p_ins
         eps_g = v1 - R.T @ v01
-        eps_psi = np.arctan2(np.sin(psi - theta_ins[2]), np.cos(psi - theta_ins[2])) # ssa = arctan2
+        eps_psi = np.arctan2(v_ins[1],v_ins[0]) # ssa = arctan2
 
         if y_pos != None:
             eps = np.array([eps_pos, eps_g, eps_psi])
@@ -119,7 +119,7 @@ def updateKalmanFilter(x_ins, P_prd, mu, h, Qd, Rd, f_imu, w_imu, psi, y_pos=Non
     theta_ins = theta_ins + h * (Rot.from_euler('zyx',[theta_ins[0],theta_ins[1]]) @ w_ins)
 
     x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
-
+    return x_ins, P_prd
 
 # How to initialize ins
 # p_ins = np.array([0, 0, 0]).T
