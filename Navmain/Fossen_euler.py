@@ -64,13 +64,11 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
 
     if all(y_pos) != None:
         Cd = np.array([[I3, O3, O3, O3, O3],
-              [O3, O3, O3, sk.skew(R.T@v01), O3],
-              [np.zeros(1), np.zeros(11), 1, np.zeros(1), np.zeros(3)]]) # Double check that its two zeros(1)!
+              [O3, O3, O3, sk.skew(R.T@v01), O3]]) 
     else:
         Cd = np.array([[I3, O3, O3, O3, O3],
               [O3, I3, O3, O3, O3],
-              [O3, O3, O3, sk.skew(R.T@v01), O3],
-              [np.zeros(1), np.zeros(11), 1, np.zeros(1), np.zeros(3)]]) # Double check that its two zeros(1)!
+              [O3, O3, O3, sk.skew(R.T@v01), O3]]) 
     
     Ed = h * np.array([[O3, O3, O3, O3],
               [-R, O3, O3, O3],
