@@ -66,9 +66,9 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
         Cd = np.block([[I3, O3, O3, O3, O3],
               [O3, O3, O3, sk.skew(R.T@v01), O3]]) 
         Cd = np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))
-        print("CD-"*30)
-        print(Cd)
-        print("CD-"*30)
+        # print("CD-"*30)
+        # print(Cd)
+        # print("CD-"*30)
     else:
         Cd = np.block([[I3, O3, O3, O3, O3],
               [O3, I3, O3, O3, O3],
@@ -87,9 +87,9 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     else:
         # EKSF gain: K[k]
         K = P_prd @ Cd.T @ np.linalg.inv(Cd @ P_prd @ Cd.T + Rd)
-        print("K-"*30)
-        print(K)
-        print("K-"*30)
+        # print("K-"*30)
+        # print(K)
+        # print("K-"*30)
         IKC = np.eye(15) - K @ Cd
 
         # Estimate error: eps[k]
@@ -99,11 +99,11 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
 
         if all(y_pos) != None:
             eps = np.hstack([eps_pos, eps_g, eps_psi])
-            print(eps)
+            # print(eps)
         else:
             eps_vel = y_vel - v_ins
             eps = np.hstack([eps_pos, eps_vel, eps_g, eps_psi])
-            print(eps)
+            # print(eps)
 
         # Corrector: delta_x_hat[k] and P_hat[k]
         delta_x_hat = K @ eps
