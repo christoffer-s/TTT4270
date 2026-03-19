@@ -87,7 +87,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
         # Estimate error: eps[k]
         eps_pos = y_pos - p_ins
         eps_g = v1 - R.T @ v01
-        eps_psi = np.arctan2(v_ins[1],v_ins[0]) # ssa = arctan2
+        eps_psi = np.array([0,0,np.arctan2(v_ins[1],v_ins[0])]) # ssa = arctan2
 
         if all(y_pos) != None:
             eps = np.array([eps_pos, eps_g, eps_psi])
