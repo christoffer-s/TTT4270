@@ -93,9 +93,11 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
 
         if all(y_pos) != None:
             eps = np.hstack([eps_pos, eps_g, eps_psi])
+            print(eps)
         else:
             eps_vel = y_vel - v_ins
             eps = np.hstack([eps_pos, eps_vel, eps_g, eps_psi])
+            print(eps)
 
         # Corrector: delta_x_hat[k] and P_hat[k]
         delta_x_hat = K @ eps
