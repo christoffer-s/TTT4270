@@ -54,7 +54,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     v01 = np.array([0,0,-1]).T
     v1 = f_ins/np.linalg.norm(f_ins)
 
-    A = np.array([[O3, I3, O3, O3, O3],
+    A = np.block([[O3, I3, O3, O3, O3],
          [O3, O3, -R, -R @ sk.skew(f_ins), O3],
          [O3, O3, -(1/T_acc)*I3, O3, O3],
          [O3, O3, O3, -sk.skew(w_ins), -I3],
@@ -63,14 +63,14 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     Ad = expm(A * h)
 
     if all(y_pos) != None:
-        Cd = np.array([[I3, O3, O3, O3, O3],
+        Cd = np.block([[I3, O3, O3, O3, O3],
               [O3, O3, O3, sk.skew(R.T@v01), O3]]) 
     else:
-        Cd = np.array([[I3, O3, O3, O3, O3],
+        Cd = np.block([[I3, O3, O3, O3, O3],
               [O3, I3, O3, O3, O3],
               [O3, O3, O3, sk.skew(R.T@v01), O3]]) 
     
-    Ed = h * np.array([[O3, O3, O3, O3],
+    Ed = h * np.block([[O3, O3, O3, O3],
               [-R, O3, O3, O3],
               [O3, I3, O3, O3],
               [O3, O3, -I3, O3],
