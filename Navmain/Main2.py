@@ -113,7 +113,7 @@ def les_sensorer_og_kalman():
     raw_lat = pos[1][0]
     gps_x, gps_y = lon_lat_til_xy(raw_lon, raw_lat)
 
-    y_pos = np.array([gps_x, gps_y, 0])
+    y_pos = np.array([gps_x, gps_y, 0]).T
     #AKSELEROMETER DATA:
     
     f_imu, w_imu = acc.IMU()
