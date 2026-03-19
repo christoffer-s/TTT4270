@@ -67,7 +67,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
               [O3, O3, O3, sk.skew(R.T@v01), O3]]) 
         np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))
         print("CD-"*30)
-        print(K)
+        print(Cd)
         print("CD-"*30)
     else:
         Cd = np.block([[I3, O3, O3, O3, O3],
