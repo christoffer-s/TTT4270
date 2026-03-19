@@ -124,7 +124,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     a_ins = R @ f_ins + g_n
     p_ins = p_ins + h * v_ins + h**2/2 * a_ins
     v_ins = v_ins + h * a_ins
-    theta_ins = theta_ins + h * (Rot.from_euler('zyx',[theta_ins[0],theta_ins[1], theta_ins[2]]) @ w_ins)
+    theta_ins = theta_ins + h * (Rot.from_euler('zyx',[theta_ins[0],theta_ins[1], theta_ins[2]]) * w_ins)
 
     x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
 
