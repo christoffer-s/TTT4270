@@ -82,7 +82,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     else:
         # EKSF gain: K[k]
         K = P_prd @ Cd.T @ np.linalg.inv(Cd @ P_prd @ Cd.T + Rd)
-        IKC = np.eye(15) - K * Cd
+        IKC = np.eye(15) - K @ Cd
 
         # Estimate error: eps[k]
         eps_pos = y_pos - p_ins
