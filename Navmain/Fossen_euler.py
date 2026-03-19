@@ -111,11 +111,11 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
 
         # INS reset: x_ins[k]
         
-        p_ins = p_ins + delta_x_hat(0);	         # Reset INS position
-        v_ins = v_ins + delta_x_hat(1);			 # Reset INS velocity
-        b_acc_ins = b_acc_ins + delta_x_hat(2);  # Reset ACC bias
-        theta_ins = theta_ins + delta_x_hat(3);  # Reset INS attitude
-        b_ars_ins = b_ars_ins + delta_x_hat(4);  # Reset ARS bias
+        p_ins = p_ins + delta_x_hat[0];	         # Reset INS position
+        v_ins = v_ins + delta_x_hat[1];			 # Reset INS velocity
+        b_acc_ins = b_acc_ins + delta_x_hat[2];  # Reset ACC bias
+        theta_ins = theta_ins + delta_x_hat[3];  # Reset INS attitude
+        b_ars_ins = b_ars_ins + delta_x_hat[4];  # Reset ARS bias
 
     # Predictor: P_prd[k+1]
     P_prd = Ad * P_hat * Ad.T + Ed * Qd * Ed.T
