@@ -79,7 +79,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
               [O3, O3, O3, I3]])
     
     # Kalman filter algorithm
-    if y_pos == None:
+    if all(y_pos) == None:
         P_hat = P_prd
     else:
         # EKSF gain: K[k]
