@@ -65,7 +65,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     if all(y_pos) != None:
         Cd = np.block([[I3, O3, O3, O3, O3],
               [O3, O3, O3, sk.skew(R.T@v01), O3]]) 
-        np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))
+        Cd = np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))
         print("CD-"*30)
         print(Cd)
         print("CD-"*30)
@@ -73,7 +73,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
         Cd = np.block([[I3, O3, O3, O3, O3],
               [O3, I3, O3, O3, O3],
               [O3, O3, O3, sk.skew(R.T@v01), O3]]) 
-        np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))
+        Cd = np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))
     
     Ed = h * np.block([[O3, O3, O3, O3],
               [-R, O3, O3, O3],
