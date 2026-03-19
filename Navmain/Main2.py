@@ -245,7 +245,7 @@ x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
 
 Rd = np.diag([1, 1, 1,  1, 1, 1,]) #pos, euler_angles
 Qd = np.diag([1, 1, 1,  1, 1, 1,  10, 10, 10,  0.01, 0.01, 0.01])
-P_prd = np.zeros((12,12))
+P_prd = np.zeros((15,15))
 
 h = 1/10 # Slow rate
 
