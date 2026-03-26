@@ -63,18 +63,19 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     
     Ad = expm(A * h)
 
-    if y_vel != None:
+    if y_vel == None:
         Cd = np.block([[I3, O3, O3, O3, O3],                    # NED Position
               [O3, O3, O3, sk.skew(R.T@v01), O3]])              # Gravity
         Cd = np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))   # Compass
         # print("CD-"*30)
         # print(Cd)
         # print("CD-"*30)
-    else:
+    else: # Might be redundant to have if statement as we never have y_vel
         Cd = np.block([[I3, O3, O3, O3, O3],                    # NED Position
               [O3, I3, O3, O3, O3],                             # NED Velocities
               [O3, O3, O3, sk.skew(R.T@v01), O3]])              # Gravity
         Cd = np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))   # Compass
+
     
     Ed = h * np.block([[O3, O3, O3, O3],    
               [-R, O3, O3, O3],             
