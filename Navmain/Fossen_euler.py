@@ -63,7 +63,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     
     Ad = expm(A * h)
 
-    if all(y_vel) != None:
+    if y_vel != None:
         Cd = np.block([[I3, O3, O3, O3, O3],                    # NED Position
               [O3, O3, O3, sk.skew(R.T@v01), O3]])              # Gravity
         Cd = np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))   # Compass
