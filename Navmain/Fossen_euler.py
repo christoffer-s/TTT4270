@@ -24,7 +24,7 @@ import skew as sk
 
 
 
-def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=None):
+def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None):
     T_acc = 1000
     T_ars = 1000 
 
@@ -54,7 +54,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     v01 = np.array([0,0,-1]).T
     v1 = f_ins/np.linalg.norm(f_ins)
 
-    # Discrete-time ESKF matrices
+    # Discrete-time ESKF matrices, A, Ad, Cd & Ed
     A = np.block([[O3, I3, O3, O3, O3],
          [O3, O3, -R, -R @ sk.skew(f_ins), O3],
          [O3, O3, -(1/T_acc)*I3, O3, O3],
@@ -63,20 +63,11 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     
     Ad = expm(A * h)
 
-    if y_vel == None:
-        Cd = np.block([[I3, O3, O3, O3, O3],                    # NED Position
-              [O3, O3, O3, sk.skew(R.T@v01), O3]])              # Gravity
-        Cd = np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))   # Compass
-        # print("CD-"*30)
-        # print(Cd)
-        # print("CD-"*30)
-    else: # Might be redundant to have if statement as we never have y_vel
-        Cd = np.block([[I3, O3, O3, O3, O3],                    # NED Position
-              [O3, I3, O3, O3, O3],                             # NED Velocities
-              [O3, O3, O3, sk.skew(R.T@v01), O3]])              # Gravity
-        Cd = np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))   # Compass
+    # No y_vel measurements for this system, so 15x7 matrix
+    Cd = np.block([[I3, O3, O3, O3, O3],                    # NED Position
+          [O3, O3, O3, sk.skew(R.T@v01), O3]])              # Gravity
+    Cd = np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))   # Compass
 
-    
     Ed = h * np.block([[O3, O3, O3, O3],    
               [-R, O3, O3, O3],             
               [O3, I3, O3, O3],             
@@ -89,23 +80,13 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     else:
         # EKSF gain: K[k]
         K = P_prd @ Cd.T @ np.linalg.inv(Cd @ P_prd @ Cd.T + Rd)
-        # print("K-"*30)
-        # print(K)
-        # print("K-"*30)
         IKC = np.eye(15) - K @ Cd
 
         # Estimate error: eps[k]
         eps_pos = y_pos - p_ins
         eps_g = v1 - R.T @ v01
         eps_psi = np.arctan2(v_ins[1],v_ins[0]) # ssa = arctan2
-
-        if all(y_pos) != None:
-            eps = np.hstack([eps_pos, eps_g, eps_psi])
-            # print(eps)
-        else:
-            eps_vel = y_vel - v_ins
-            eps = np.hstack([eps_pos, eps_vel, eps_g, eps_psi])
-            # print(eps)
+        eps = np.hstack([eps_pos, eps_g, eps_psi])
 
         # Corrector: delta_x_hat[k] and P_hat[k]
         delta_x_hat = K @ eps
