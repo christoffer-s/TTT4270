@@ -26,7 +26,7 @@ import skew as sk
 
 def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=None):
     T_acc = 1000
-    T_ars = 500 # Dobbelt sjekk disse
+    T_ars = 1000 
 
     # ESKF states and matrices
     p_ins = x_ins[0]
@@ -54,6 +54,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     v01 = np.array([0,0,-1]).T
     v1 = f_ins/np.linalg.norm(f_ins)
 
+    # Discrete-time ESKF matrices
     A = np.block([[O3, I3, O3, O3, O3],
          [O3, O3, -R, -R @ sk.skew(f_ins), O3],
          [O3, O3, -(1/T_acc)*I3, O3, O3],
@@ -62,23 +63,23 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     
     Ad = expm(A * h)
 
-    if all(y_pos) != None:
-        Cd = np.block([[I3, O3, O3, O3, O3],
-              [O3, O3, O3, sk.skew(R.T@v01), O3]]) 
-        Cd = np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))
+    if all(y_vel) != None:
+        Cd = np.block([[I3, O3, O3, O3, O3],                    # NED Position
+              [O3, O3, O3, sk.skew(R.T@v01), O3]])              # Gravity
+        Cd = np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))   # Compass
         # print("CD-"*30)
         # print(Cd)
         # print("CD-"*30)
     else:
-        Cd = np.block([[I3, O3, O3, O3, O3],
-              [O3, I3, O3, O3, O3],
-              [O3, O3, O3, sk.skew(R.T@v01), O3]]) 
-        Cd = np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))
+        Cd = np.block([[I3, O3, O3, O3, O3],                    # NED Position
+              [O3, I3, O3, O3, O3],                             # NED Velocities
+              [O3, O3, O3, sk.skew(R.T@v01), O3]])              # Gravity
+        Cd = np.vstack((Cd, [0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]))   # Compass
     
-    Ed = h * np.block([[O3, O3, O3, O3],
-              [-R, O3, O3, O3],
-              [O3, I3, O3, O3],
-              [O3, O3, -I3, O3],
+    Ed = h * np.block([[O3, O3, O3, O3],    
+              [-R, O3, O3, O3],             
+              [O3, I3, O3, O3],             
+              [O3, O3, -I3, O3],            
               [O3, O3, O3, I3]])
     
     # Kalman filter algorithm
@@ -124,7 +125,9 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None, y_vel=
     a_ins = R @ f_ins + g_n
     p_ins = p_ins + h * v_ins + h**2/2 * a_ins
     v_ins = v_ins + h * a_ins
-    theta_ins = theta_ins + h * Rot.from_euler('zyx',[theta_ins[0],theta_ins[1], theta_ins[2]]).apply(w_ins)
+    theta_ins = theta_ins + h * Rot.from_euler(
+        'zyx',[theta_ins[0],theta_ins[1], theta_ins[2]]).apply(w_ins)
+    # Potensielt gå med r.apply(w_ins) istedet
 
     x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
 
