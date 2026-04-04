@@ -12,8 +12,9 @@ import numpy as np
 
 # Now you can import
 import gps_to_csv_call
-import Fossen_euler
+import Fossen_euler_with_y_vel_if
 import acc
+import motor_ctrl
 
 # ==========================================
 # 0. DEFINISJON AV ORIGO (LOKALT KOORDINATSYSTEM)
@@ -120,7 +121,7 @@ def les_sensorer_og_kalman():
 
     # Kalman-filteret/Systemet vårt konverterer dette til X, Y i meter fra Origo
 
-    Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
+    Fossen_euler_with_y_vel_if.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     
     # estimert_retning = 90.0 # Bilen peker mot Øst
     
@@ -131,10 +132,21 @@ def les_tof_sensor():
     return 10.0 # 10 meter = fri vei
 
 def styr_motorer(fart, sving_vinkel):
-    """Sender fart og styrevinkel til motorkontrolleren."""
-    print(f"[MOTOR] Fart: {fart} | Styrevinkel: {sving_vinkel:.1f} grader")
+    if sving_vinkel > 0:
+        turn_rate = 0.7
+    elif sving_vinkel == 0:
+        turn_rate = 0
+    else:
+        turn_rate = -0.7
+    motor_ctrl.drive.drive(forward_speed=fart,turn_rate=turn_rate)
+    print(f"Driving forward at {x_ins[1][0]} in x & {x_ins[1][1]} in y direction")
+    print(f"Current position is: {x_ins[0][0]}, {x_ins[0][1]}")
+
+    # """Sender fart og styrevinkel til motorkontrolleren."""
+    # print(f"[MOTOR] Fart: {fart} | Styrevinkel: {sving_vinkel:.1f} grader")
 
 def brems_bilen():
+    motor_ctrl.drive.stop()
     """Stopper motorene fullstendig."""
     print("[MOTOR] 🛑 Bremsene aktivert. Bilen har stoppet.")
 
