@@ -25,8 +25,8 @@ import skew as sk
 
 
 def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None):
-    T_acc = 1000
-    T_ars = 1000 
+    T_acc = 10
+    T_ars = 10 #Switched from 1000
 
     # ESKF states and matrices
     p_ins = x_ins[0]
@@ -105,7 +105,9 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None):
 
     # INS propagation: x_ins[k+1]
     a_ins = R @ f_ins + g_n
+    print(f"a_ins: {a_ins}")
     p_ins = p_ins + h * v_ins + h**2/2 * a_ins
+    print(f"p_ins: {p_ins}")
     v_ins = v_ins + h * a_ins
     theta_ins = theta_ins + h * Rot.from_euler(
         'zyx',[theta_ins[0],theta_ins[1], theta_ins[2]]).apply(w_ins)
