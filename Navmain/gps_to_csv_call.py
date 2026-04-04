@@ -18,20 +18,19 @@ ser = serial.Serial(
 x=ser.readline().decode('utf-8', errors='ignore')
 
 def get_gps():
-	data_csv = [["Latitude", "Longitude"]]
 	if x.startswith('$'):
 		try:
 			msg = pynmea2.parse(x)
 #			if isInstance(msg, pynmea2.RMC): # and msg.status == 'A':
 #			data_csv.append([msg.latitude, msg.longitude, msg.speed_kph])
-			data_csv.append([msg.latitude, msg.longitude])
+			data_csv = [msg.latitude, msg.longitude]
 			# return data_csv
 		except pynmea2.ParseError as e:
 			print("ParseError")
 		except Exception as e:
 			print(f"Error {e}")
 	else:
-		data_csv.append([0,0])
+		data_csv = [0.0,0.0]
 		# time.sleep(0.1)
 	
 	file_path = 'gps_data.csv'
@@ -44,6 +43,6 @@ def get_gps():
 
 
 
-print(get_gps)
+print(get_gps())
 
 
