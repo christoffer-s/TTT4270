@@ -109,9 +109,12 @@ def finn_korteste_vei(G, start_xy, slutt_xy):
 def les_sensorer_og_kalman():
     """Henter bilens estimerte posisjon i meter (X,Y) og retning."""
     # Henter rå-GPS fra modulen din
+    prev_pos = pos
     pos = gps_to_csv_call.get_gps()
     if pos[0] == 0:
-        gps_x, gps_y = (0,0)
+        raw_lon = prev_pos[1]
+        raw_lat = prev_pos[0]
+        gps_x, gps_y = lon_lat_til_xy(raw_lon, raw_lat)
         print("NO GPS")
     else:
         raw_lon = pos[1]
