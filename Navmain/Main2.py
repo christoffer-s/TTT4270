@@ -238,7 +238,7 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
             vinkel_feil += 360
             
         # 5. Send til motor
-        styr_motorer("Normal", vinkel_feil)
+        styr_motorer(0.5, vinkel_feil)
         
         # 6. Kontroller hastigheten på løkken (10 Hz)
         time.sleep(0.1) 
