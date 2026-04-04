@@ -121,7 +121,7 @@ def les_sensorer_og_kalman():
 
     # Kalman-filteret/Systemet vårt konverterer dette til X, Y i meter fra Origo
 
-    Fossen_euler_with_y_vel_if.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
+    Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     
     # estimert_retning = 90.0 # Bilen peker mot Øst
     
