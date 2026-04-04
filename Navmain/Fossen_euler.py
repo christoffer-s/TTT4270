@@ -117,6 +117,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None):
     x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
     print("Kalman filter sequence complete")
 
+    return x_ins, P_prd
 # How to initialize ins
 # p_ins = np.array([0, 0, 0]).T
 # v_ins = np.array([0, 0, 0]).T

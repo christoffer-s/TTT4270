@@ -124,7 +124,7 @@ def les_sensorer_og_kalman():
 
     # Kalman-filteret/Systemet vårt konverterer dette til X, Y i meter fra Origo
 
-    Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
+    x_ins, P_prd = Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     
     # estimert_retning = 90.0 # Bilen peker mot Øst
     
@@ -133,6 +133,9 @@ def les_sensorer_og_kalman():
 def les_tof_sensor():
     """Leser TOF-sensor og returnerer avstand til hindring i meter."""
     return 10.0 # 10 meter = fri vei
+
+
+
 
 def styr_motorer(fart, sving_vinkel):
     if sving_vinkel > 75:
@@ -147,6 +150,12 @@ def styr_motorer(fart, sving_vinkel):
 
     # """Sender fart og styrevinkel til motorkontrolleren."""
     # print(f"[MOTOR] Fart: {fart} | Styrevinkel: {sving_vinkel:.1f} grader")
+
+
+
+
+
+
 
 def brems_bilen():
     motor_ctrl.drive.stop()
