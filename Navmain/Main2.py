@@ -110,12 +110,13 @@ def les_sensorer_og_kalman():
     """Henter bilens estimerte posisjon i meter (X,Y) og retning."""
     # Henter rå-GPS fra modulen din
     pos = gps_to_csv_call.get_gps()
-    if pos[1][0] != 0 and pos[1][1] != 0:
+    if pos[1][0] == 0:
+        gps_x, gps_y = (0,0)
+        print("NO GPS")
+    else:
         raw_lon = pos[1][1]
         raw_lat = pos[1][0]
         gps_x, gps_y = lon_lat_til_xy(raw_lon, raw_lat)
-    else:
-        gps_x, gps_y = (0,0)
     y_pos = np.array([gps_x, gps_y, 0]).T
     print(f"Y-pos: {y_pos}")
     #AKSELEROMETER DATA:
