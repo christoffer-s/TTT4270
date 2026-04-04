@@ -12,7 +12,7 @@ import numpy as np
 
 # Now you can import
 import gps_to_csv_call
-import Fossen_euler_with_y_vel_if
+import Fossen_euler
 import acc
 import motor_ctrl
 
