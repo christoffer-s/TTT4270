@@ -255,7 +255,7 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
             
         # 5. Send til motor
         print(f"Vinkel feil til motor: {vinkel_feil} og mål posisjon: {maal_pos_xy[0]},{maal_pos_xy[1]}")
-        styr_motorer(0.5, vinkel_feil)
+        styr_motorer(-0.5, vinkel_feil)
         
         # 6. Kontroller hastigheten på løkken (10 Hz)
         time.sleep(0.1) 
