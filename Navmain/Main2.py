@@ -271,8 +271,8 @@ theta_ins = np.array([0, 0, 0]).T
 b_ars_ins = np.array([0, 0, 0]).T
 x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
 
-Rd = np.diag([1, 1, 1,  1, 1, 1, 0.001]) #pos, euler_angles
-Qd = np.diag([1, 1, 1,  1, 1, 1,  10, 10, 10,  0.01, 0.01, 0.01])
+Rd = np.diag([1, 1, 1,  1, 1, 1, 1]) #pos, euler_angles
+Qd = np.diag([1, 1, 1,  1, 1, 1,  10, 10, 10,  10, 10, 10])
 P_prd = np.zeros((15,15))
 
 h = 1/10 # Slow rate
