@@ -132,12 +132,12 @@ def les_tof_sensor():
     return 10.0 # 10 meter = fri vei
 
 def styr_motorer(fart, sving_vinkel):
-    if sving_vinkel > 0:
+    if sving_vinkel > 60:
         turn_rate = 0.7
-    elif sving_vinkel == 0:
-        turn_rate = 0
-    else:
+    elif sving_vinkel < -60:
         turn_rate = -0.7
+    else:
+        turn_rate = 0
     motor_ctrl.drive.drive(forward_speed=fart,turn_rate=turn_rate)
     print(f"Driving forward at {x_ins[1][0]} in x & {x_ins[1][1]} in y direction")
     print(f"Current position is: {x_ins[0][0]}, {x_ins[0][1]}")
