@@ -5,7 +5,14 @@ import pynmea2
 import csv
 import numpy as np
 
-ser = serial.Serial(
+
+
+
+
+
+
+def get_gps():
+	ser = serial.Serial(
 	port='/dev/ttyAMA0',
 	baudrate = 9600,
 	parity=serial.PARITY_NONE,
@@ -13,12 +20,8 @@ ser = serial.Serial(
 	bytesize=serial.EIGHTBITS,
 	timeout=1
 )
-
-
-
-x=ser.readline().decode('utf-8', errors='ignore')
-
-def get_gps():
+	
+	x=ser.readline().decode('utf-8', errors='ignore')
 	if x.startswith('$'):
 		try:
 			msg = pynmea2.parse(x)
@@ -38,7 +41,7 @@ def get_gps():
 
 	with open(file_path, mode='w', newline='') as file:
 		csv_writer = csv.writer(file)
-		csv_writer.writerows(data_csv)
+		csv_writer.writerow(data_csv)
 	# print("CSV file made")
 	return data_csv
 
