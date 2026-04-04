@@ -109,12 +109,9 @@ def finn_korteste_vei(G, start_xy, slutt_xy):
 def les_sensorer_og_kalman():
     """Henter bilens estimerte posisjon i meter (X,Y) og retning."""
     # Henter rå-GPS fra modulen din
-    
     pos = gps_to_csv_call.get_gps()
     if pos[0] == 0:
-        raw_lon = prev_pos[1]
-        raw_lat = prev_pos[0]
-        gps_x, gps_y = lon_lat_til_xy(raw_lon, raw_lat)
+        gps_x, gps_y = (0,0)
         print("NO GPS")
     else:
         raw_lon = pos[1]
@@ -133,7 +130,7 @@ def les_sensorer_og_kalman():
     # x_ins, P_prd = Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     # estimert_retning = 90.0 # Bilen peker mot Øst
-    prev_pos = pos
+
     return (x_ins[0][0], x_ins[0][1]), x_ins[3][2]
 
 def les_tof_sensor():
