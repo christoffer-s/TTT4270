@@ -110,7 +110,7 @@ def les_sensorer_og_kalman():
     """Henter bilens estimerte posisjon i meter (X,Y) og retning."""
     # Henter rå-GPS fra modulen din
     pos = gps_to_csv_call.get_gps()
-    if all(pos) != 0:
+    if pos[0] != 0 and pos[1 != 0]:
         raw_lon = pos[1][1]
         raw_lat = pos[1][0]
         gps_x, gps_y = lon_lat_til_xy(raw_lon, raw_lat)
@@ -135,9 +135,9 @@ def les_tof_sensor():
     return 10.0 # 10 meter = fri vei
 
 def styr_motorer(fart, sving_vinkel):
-    if sving_vinkel > 60:
+    if sving_vinkel > 75:
         turn_rate = 0.7
-    elif sving_vinkel < -60:
+    elif sving_vinkel < -75:
         turn_rate = -0.7
     else:
         turn_rate = 0
