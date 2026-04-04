@@ -3,6 +3,7 @@ import time
 import serial
 import pynmea2
 import csv
+import numpy as np
 
 ser = serial.Serial(
 	port='/dev/ttyAMA0',
@@ -23,14 +24,14 @@ def get_gps():
 			msg = pynmea2.parse(x)
 #			if isInstance(msg, pynmea2.RMC): # and msg.status == 'A':
 #			data_csv.append([msg.latitude, msg.longitude, msg.speed_kph])
-			data_csv = [msg.latitude, msg.longitude]
+			data_csv = np.array([msg.latitude, msg.longitude])
 			# return data_csv
 		except pynmea2.ParseError as e:
 			print("ParseError")
 		except Exception as e:
 			print(f"Error {e}")
 	else:
-		data_csv = [0.0,0.0]
+		data_csv = np.array([0.0,0.0])
 		# time.sleep(0.1)
 	
 	file_path = 'gps_data.csv'
