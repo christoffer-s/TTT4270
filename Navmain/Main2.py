@@ -115,6 +115,7 @@ def les_sensorer_og_kalman():
     gps_x, gps_y = lon_lat_til_xy(raw_lon, raw_lat)
 
     y_pos = np.array([gps_x, gps_y, 0]).T
+    print(f"Y-pos: {y_pos}")
     #AKSELEROMETER DATA:
     
     f_imu, w_imu = acc.IMU()
@@ -238,6 +239,7 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
             vinkel_feil += 360
             
         # 5. Send til motor
+        print(f"Vinkel feil til motor: {vinkel_feil}")
         styr_motorer(0.5, vinkel_feil)
         
         # 6. Kontroller hastigheten på løkken (10 Hz)
@@ -273,10 +275,11 @@ if __name__ == "__main__":
         exit()
         
     # 2. Definer ruten med rå GPS, og konverter til Lokalt X/Y
-    start_lon_lat = (10.402332799157428, 63.41809573255258) 
+    # start_lon_lat = (10.402332799157428, 63.41809573255258) 
     maal_lon_lat = (10.405400716816052, 63.41672421102855)
     
-    min_start_xy = lon_lat_til_xy(start_lon_lat[0], start_lon_lat[1]) 
+    # min_start_xy = lon_lat_til_xy(start_lon_lat[0], start_lon_lat[1]) 
+    min_start_xy = (x_ins[0][0], x_ins[0][1])
     mitt_maal_xy = lon_lat_til_xy(maal_lon_lat[0], maal_lon_lat[1])
     
     # 3. Bygg det matematiske kartet (Nodes er nå X, Y meter fra Origo!)
