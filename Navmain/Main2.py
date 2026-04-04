@@ -123,6 +123,8 @@ def les_sensorer_og_kalman():
     f_imu, w_imu = acc.IMU()
 
     # Kalman-filteret/Systemet vårt konverterer dette til X, Y i meter fra Origo
+    global x_ins
+    global P_prd
 
     x_ins, P_prd = Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     
@@ -145,8 +147,8 @@ def styr_motorer(fart, sving_vinkel):
     else:
         turn_rate = 0
     motor_ctrl.drive.drive(forward_speed=fart,turn_rate=turn_rate)
-    print(f"Driving forward at {x_ins[1][0]} in x & {x_ins[1][1]} in y direction")
-    print(f"Current position is: {x_ins[0][0]}, {x_ins[0][1]}")
+    # print(f"Driving forward at {x_ins[1][0]} in x & {x_ins[1][1]} in y direction")
+    # print(f"Current position is: {x_ins[0][0]}, {x_ins[0][1]}")
 
     # """Sender fart og styrevinkel til motorkontrolleren."""
     # print(f"[MOTOR] Fart: {fart} | Styrevinkel: {sving_vinkel:.1f} grader")
