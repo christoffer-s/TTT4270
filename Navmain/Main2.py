@@ -108,27 +108,24 @@ def finn_korteste_vei(G, start_xy, slutt_xy):
 
 def les_sensorer_og_kalman():
     """Henter bilens estimerte posisjon i meter (X,Y) og retning."""
+
+    #AKSELEROMETER DATA:
+    f_imu, w_imu = acc.IMU()
+
     # Henter rå-GPS fra modulen din
     pos = gps_to_csv_call.get_gps()
     if pos[0] == 0:
-        gps_x, gps_y = (0,0)
+        y_pos = None
         print("NO GPS")
+        Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu)
     else:
         raw_lon = pos[1]
         raw_lat = pos[0]
         gps_x, gps_y = lon_lat_til_xy(raw_lon, raw_lat)
-    y_pos = np.array([gps_x, gps_y, 0]).T
-    print(f"Y-pos: {y_pos}")
-    #AKSELEROMETER DATA:
-    
-    f_imu, w_imu = acc.IMU()
-
-    # Kalman-filteret/Systemet vårt konverterer dette til X, Y i meter fra Origo
-    # global x_ins
-    # global P_prd
+        y_pos = np.array([gps_x, gps_y, 0]).T
+        Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
 
     # x_ins, P_prd = Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
-    Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     # estimert_retning = 90.0 # Bilen peker mot Øst
 
     return (x_ins[0][0], x_ins[0][1]), x_ins[3][2]
@@ -147,13 +144,15 @@ def styr_motorer(fart, sving_vinkel):
     #     turn_rate = -0.7
     # else:
     #     turn_rate = 0
-    turn_rate = 0
+
+
+    turn_rate = 0 # For testing uten at den svinger
     motor_ctrl.drive.drive(forward_speed=fart,turn_rate=turn_rate)
-    # print(f"Driving forward at {x_ins[1][0]} in x & {x_ins[1][1]} in y direction")
-    # print(f"Current position is: {x_ins[0][0]}, {x_ins[0][1]}")
 
     # """Sender fart og styrevinkel til motorkontrolleren."""
     # print(f"[MOTOR] Fart: {fart} | Styrevinkel: {sving_vinkel:.1f} grader")
+    #TRENGER MER TESTING MED OVERSETTE MELLOM MOTOR_CTRL SKRIPT OG MAIN
+    #MOTOR_CTRL GIR -1 TIL 1 FOR BEGGE DELER, MAIN GIR GRADER FEIL FRA ØNSKET COURSE
 
 
 
@@ -203,7 +202,7 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
     print("\n--- STARTER SELVKJØRING ---")
     
     while naavaerende_waypoint_indeks < len(waypoints_xy):
-        
+
         # 1. Hent posisjon (NÅ I X,Y METER) og retning
         estimert_pos_xy, estimert_retning = les_sensorer_og_kalman()
         print("NY SENSOR LESNING!!!!!!!!!!!!!!!!")
@@ -258,8 +257,14 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
         print(f"Vinkel feil til motor: {vinkel_feil} og mål posisjon: {maal_pos_xy[0]},{maal_pos_xy[1]}")
         styr_motorer(-0.5, vinkel_feil)
         
-        # 6. Kontroller hastigheten på løkken (10 Hz)
-        time.sleep(0.1) 
+        # # 6. Kontroller hastigheten på løkken (1000 Hz)
+        next_time += h
+        sleep_time = next_time - time.time()
+        if sleep_time > 0:
+            time.sleep(sleep_time)
+        else:
+            pass
+
 
 # ==========================================
 # 5. START AV PROGRAMMET
@@ -268,16 +273,22 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
 # Initialize ins
 p_ins = np.array([0, 0, 0]).T
 v_ins = np.array([0, 0, 0]).T
-b_acc_ins = np.array([0, 0, 0]).T
+b_acc_ins = np.array([0.01, 0.01, 0.01]).T # Added small starting bias
 theta_ins = np.array([0, 0, 0]).T
-b_ars_ins = np.array([0, 0, 0]).T
+b_ars_ins = np.array([0.01, 0.01, 0.01]).T # Added small starting bias
 x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
 
 Rd = np.diag([1, 1, 1,  1, 1, 1, 1]) #pos, euler_angles
 Qd = np.diag([1, 1, 1,  1, 1, 1,  10, 10, 10,  10, 10, 10])
 P_prd = np.zeros((15,15))
 
-h = 1/10 # Slow rate
+f_fast = 1000
+f_slow = 10
+
+h = 1/f_fast 
+h_slow = 1/f_slow
+
+next_time = time.time()
 
 if __name__ == "__main__":
     print("Initialiserer systemet (Kartesisk XY)...")
