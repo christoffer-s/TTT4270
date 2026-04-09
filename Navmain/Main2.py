@@ -114,7 +114,7 @@ def les_sensorer_og_kalman():
 
     # Henter rå-GPS fra modulen din
     pos, gps_read = gps_to_csv_call.get_gps()
-    if pos[0] == 0:
+    if gps_read == False:
         # print("NO GPS")
         Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read)
     else:
