@@ -7,10 +7,13 @@ def _get_gps_safe():
     try:
         df = pd.read_csv('gps_data.csv')
         pos = df.iloc[0].astype(float).tolist()
-        return  pos
+        if all(pos) == 0:
+            return (63.41809573255258, 10.402332799157428)
+        else:
+            return  pos
     except Exception:
         # Fallback så webserveren fortsatt kjører
-        return (63.41, 10.40)
+        return (63.41809573255258, 10.402332799157428)
 
 @app.route("/")
 def index():
