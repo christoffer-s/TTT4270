@@ -200,9 +200,8 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
     naavaerende_waypoint_indeks = 1 
     
     print("\n--- STARTER SELVKJØRING ---")
-    
+    next_time = time.time()
     while naavaerende_waypoint_indeks < len(waypoints_xy):
-
         # 1. Hent posisjon (NÅ I X,Y METER) og retning
         estimert_pos_xy, estimert_retning = les_sensorer_og_kalman()
         print("NY SENSOR LESNING!!!!!!!!!!!!!!!!")
@@ -288,7 +287,7 @@ f_slow = 10
 h = 1/f_fast 
 h_slow = 1/f_slow
 
-next_time = time.time()
+
 
 if __name__ == "__main__":
     print("Initialiserer systemet (Kartesisk XY)...")
