@@ -116,14 +116,14 @@ def les_sensorer_og_kalman():
     pos = gps_to_csv_call.get_gps()
     if pos[0] == 0:
         # print("NO GPS")
-        updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read=False)
+        x_ins, P_prd = updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read=False)
     else:
         raw_lon = pos[1]
         raw_lat = pos[0]
         gps_x, gps_y = lon_lat_til_xy(raw_lon, raw_lat)
         y_pos = np.array([gps_x, gps_y, 0]).T
         print(f"ypos: {y_pos}")
-        updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read=True, y_pos=y_pos)
+        x_ins, P_prd = updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read=True, y_pos=y_pos)
 
     # x_ins, P_prd = Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     # estimert_retning = 90.0 # Bilen peker mot Øst
