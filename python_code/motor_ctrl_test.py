@@ -12,12 +12,12 @@ back_right_motor = Motor(26, 19) #Koble GPIO 26 til pin 7 på motor driver board
 
 drive = Drive(right_motor, left_motor, back_left_motor, back_right_motor)
 
-drive.drive(0.5, 0)
+drive.drive(0.3, 0)
 time.sleep(4)
-drive.drive(0.5, 0.5)
+drive.drive(-0.3, 0)
 time.sleep(4)
-drive.drive(0.5, -0.5)
+drive.drive(0.3, -0.15 )
 time.sleep(4)
-drive.drive(-0.5, 0)
+drive.drive(0.3, 0.15)
 time.sleep(4)
 drive.stop()
