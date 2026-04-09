@@ -108,7 +108,8 @@ def finn_korteste_vei(G, start_xy, slutt_xy):
 
 def les_sensorer_og_kalman():
     """Henter bilens estimerte posisjon i meter (X,Y) og retning."""
-
+    global x_ins 
+    global P_prd
     #AKSELEROMETER DATA:
     f_imu, w_imu = acc.IMU()
 
@@ -280,6 +281,7 @@ x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
 
 Rd = np.diag([1, 1, 1,  1, 1, 1, 1]) #pos, euler_angles
 Qd = np.diag([1, 1, 1,  1, 1, 1,  10, 10, 10,  10, 10, 10])
+
 P_prd = np.eye(15) # EYE NOT ZEROS 
 
 f_fast = 1000
