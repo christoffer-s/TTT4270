@@ -285,7 +285,7 @@ P_prd = np.zeros((15,15))
 f_fast = 1000
 f_slow = 10
 
-h = 1/f_fast 
+h = 1/f_slow 
 h_slow = 1/f_slow
 
 
