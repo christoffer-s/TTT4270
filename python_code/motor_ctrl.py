@@ -5,7 +5,9 @@ Everything related to motor control
 
 On the motor driver board: 
     M1 = right motor
+    M2 = back left motor
     M3 = left motor
+    M4 = back right motor
 
 '''
 class Motor:
@@ -25,13 +27,17 @@ class Motor:
         self.pwm.value = 0
 
 
-right_motor = Motor(6, 12) #Koble GPIO 6 til pin 4 på motor driver board, og GPIO 12 til pin 3
+""" right_motor = Motor(6, 12) #Koble GPIO 6 til pin 4 på motor driver board, og GPIO 12 til pin 3
 left_motor = Motor(16, 13) #Koble GPIO 16 til pin 8 på motor driver board, og GPIO 13 til pin 5
-
+back_left_motor = Motor(17, 18) #Koble GPIO 17 til pin 12 på motor driver board, og GPIO 18 til pin 11
+back_right_motor = Motor(26, 19) #Koble GPIO 26 til pin 7 på motor driver board, og GPIO 19 til pin 6
+ """
 class Drive:
-    def __init__(self, right_motor, left_motor):
+    def __init__(self, right_motor, left_motor, back_left_motor, back_right_motor):
         self.right_motor = right_motor
         self.left_motor = left_motor
+        self.back_left_motor = back_left_motor
+        self.back_right_motor = back_right_motor
         self.speed = 0.5 #Default speed
         self.turn_ratio = 0.5 #Default turn ratio
     
@@ -41,10 +47,14 @@ class Drive:
     def forward(self):
         self.right_motor.forward(self.speed)
         self.left_motor.forward(self.speed)
+        self.back_left_motor.backward(self.speed) 
+        self.back_right_motor.backward(self.speed)
     
     def backward(self):
         self.right_motor.backward(self.speed)
         self.left_motor.backward(self.speed)
+        self.back_left_motor.forward(self.speed)
+        self.back_right_motor.forward(self.speed)
     
     def drive(self, forward_speed, turn_rate):
         """
@@ -60,17 +70,23 @@ class Drive:
 
         if right >= 0:
             self.right_motor.forward(right)
+            self.back_right_motor.backward(right)
         else:
             self.right_motor.backward(abs(right))
+            self.back_right_motor.forward(abs(right))
         
         if left >= 0:
             self.left_motor.forward(left)
+            self.back_left_motor.backward(left)
         else:
             self.left_motor.backward(abs(left))
+            self.back_left_motor.forward(abs(left))
 
     def stop(self):
         self.right_motor.stop()
         self.left_motor.stop()
+        self.back_left_motor.stop()
+        self.back_right_motor.stop()
             
 
-drive = Drive(right_motor, left_motor)
+""" drive = Drive(right_motor, left_motor, back_left_motor, back_right_motor) """
