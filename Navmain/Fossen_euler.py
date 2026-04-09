@@ -24,7 +24,7 @@ import skew as sk
 
 
 
-def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None):
+def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=None):
     T_acc = 10
     T_ars = 10 #Switched from 1000
 
@@ -75,7 +75,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None):
               [O3, O3, O3, I3]])
     
     # Kalman filter algorithm
-    if all(y_pos) == None:
+    if gps_read == False:
         P_hat = P_prd
     else:
         # EKSF gain: K[k]
@@ -89,11 +89,13 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None):
         eps = np.hstack([eps_pos, eps_g, eps_psi])
 
         # Corrector: delta_x_hat[k] and P_hat[k]
+        print(f"K: {K}")
+        print(f"eps: {eps}")
         delta_x_hat = K @ eps
         P_hat = IKC @ P_prd @ IKC + K @ Rd @ K.T
 
         # INS reset: x_ins[k]
-        
+        print(f"Delta_x_hat: {delta_x_hat}")
         p_ins = p_ins + delta_x_hat[0];	         # Reset INS position
         v_ins = v_ins + delta_x_hat[1];			 # Reset INS velocity
         b_acc_ins = b_acc_ins + delta_x_hat[2];  # Reset ACC bias
@@ -105,7 +107,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None):
 
     # INS propagation: x_ins[k+1]
     a_ins = R @ f_ins + g_n
-    print(f"a_ins: {a_ins}")
+    # print(f"a_ins: {a_ins}")
     p_ins = p_ins + h * v_ins + h**2/2 * a_ins
     v_ins = v_ins + h * a_ins
     print(f"p_ins: {p_ins}")
@@ -116,7 +118,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None):
     x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
     # print("Kalman filter sequence complete")
 
-    # return x_ins, P_prd
+    return x_ins, P_prd
 # How to initialize ins
 # p_ins = np.array([0, 0, 0]).T
 # v_ins = np.array([0, 0, 0]).T

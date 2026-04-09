@@ -31,18 +31,20 @@ def get_gps():
 			# return data_csv
 		except pynmea2.ParseError as e:
 			print("ParseError")
+			data_csv = np.array([0.0,0.0])
 		except Exception as e:
 			print(f"Error {e}")
+			data_csv = np.array([0.0,0.0])
 	else:
 		data_csv = np.array([0.0,0.0])
 		# time.sleep(0.1)
 	
-	file_path = 'gps_data.csv'
+	# file_path = 'gps_data.csv'
 
-	with open(file_path, mode='w', newline='') as file:
-		csv_writer = csv.writer(file)
-		csv_writer.writerow(data_csv)
-	# print("CSV file made")
+	# with open(file_path, mode='w', newline='') as file:
+	# 	csv_writer = csv.writer(file)
+	# 	csv_writer.writerow(data_csv)
+	# # print("CSV file made")
 	return data_csv
 
 
