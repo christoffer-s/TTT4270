@@ -93,7 +93,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
         P_hat = IKC @ P_prd @ IKC + K @ Rd @ K.T
 
         # INS reset: x_ins[k]
-        
+        print(f"Delta_x_hat[0]: {delta_x_hat[0]}")
         p_ins = p_ins + delta_x_hat[0];	         # Reset INS position
         v_ins = v_ins + delta_x_hat[1];			 # Reset INS velocity
         b_acc_ins = b_acc_ins + delta_x_hat[2];  # Reset ACC bias
