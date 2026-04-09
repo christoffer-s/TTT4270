@@ -39,12 +39,12 @@ def get_gps():
 		gps_read = False
 		# time.sleep(0.1)
 	
-	file_path = 'gps_data.csv'
+	# file_path = 'gps_data.csv'
 
-	with open(file_path, mode='w', newline='') as file:
-		csv_writer = csv.writer(file)
-		csv_writer.writerow(data_csv)
-	# print("CSV file made")
+	# with open(file_path, mode='w', newline='') as file:
+	# 	csv_writer = csv.writer(file)
+	# 	csv_writer.writerow(data_csv)
+	# # print("CSV file made")
 	return data_csv, gps_read
 
 
