@@ -123,12 +123,12 @@ def les_sensorer_og_kalman():
         raw_lat = pos[0]
         gps_x, gps_y = lon_lat_til_xy(raw_lon, raw_lat)
         y_pos = np.array([gps_x, gps_y, 0]).T
-        print(f"ypos: {y_pos}")
+        # print(f"ypos: {y_pos}")
         x_ins, P_prd = updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read=True, y_pos=y_pos)
 
     # x_ins, P_prd = Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     # estimert_retning = 90.0 # Bilen peker mot Øst
-    print(f"x_ins returned from les sensorer: {x_ins[0][0]} & {x_ins[0][1]}")
+    # print(f"x_ins returned from les sensorer: {x_ins[0][0]} & {x_ins[0][1]}")
     return (x_ins[0][0], x_ins[0][1]), x_ins[3][2]
 
 def les_tof_sensor():
@@ -254,7 +254,8 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
             vinkel_feil += 360
             
         # 5. Send til motor
-        # print(f"Vinkel feil til motor: {vinkel_feil} og mål posisjon: {maal_pos_xy[0]},{maal_pos_xy[1]}")
+        print(f"Vinkel feil til motor: {vinkel_feil} og mål posisjon: {maal_pos_xy[0]},{maal_pos_xy[1]}")
+        print(f"Nåværenede posisjon og retning: {x_ins[0][0]}, {x_ins[0][1]} og {x_ins[3][2]}")
         styr_motorer(-0.5, vinkel_feil)
         
         # # 6. Kontroller hastigheten på løkken (1000 Hz)
