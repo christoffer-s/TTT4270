@@ -122,6 +122,7 @@ def les_sensorer_og_kalman():
         raw_lat = pos[0]
         gps_x, gps_y = lon_lat_til_xy(raw_lon, raw_lat)
         y_pos = np.array([gps_x, gps_y, 0]).T
+        print(f"ypos: {y_pos}")
         Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos)
 
     # x_ins, P_prd = Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
