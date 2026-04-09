@@ -98,8 +98,8 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
         print(f"Delta_x_hat: {delta_x_hat}")     #CHECK IF DELTA_X_HAT IS GIVING TO RIGHT PLACES
         p_ins = p_ins + delta_x_hat[0:3];	         # Reset INS position
         v_ins = v_ins + delta_x_hat[3:6];			 # Reset INS velocity
-        b_acc_ins = b_acc_ins + delta_x_hat[6:9];  # Reset ACC bias
-        theta_ins = theta_ins + delta_x_hat[9:12];  # Reset INS attitude
+        b_acc_ins = b_acc_ins + delta_x_hat[6:9];    # Reset ACC bias
+        theta_ins = theta_ins + delta_x_hat[9:12];   # Reset INS attitude
         b_ars_ins = b_ars_ins + delta_x_hat[12:15];  # Reset ARS bias
 
     # Predictor: P_prd[k+1]
