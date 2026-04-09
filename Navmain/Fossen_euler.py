@@ -89,6 +89,8 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
         eps = np.hstack([eps_pos, eps_g, eps_psi])
 
         # Corrector: delta_x_hat[k] and P_hat[k]
+        print(f"K: {K}")
+        print(f"eps: {eps}")
         delta_x_hat = K @ eps
         P_hat = IKC @ P_prd @ IKC + K @ Rd @ K.T
 

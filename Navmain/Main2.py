@@ -203,7 +203,7 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
     while naavaerende_waypoint_indeks < len(waypoints_xy):
         # 1. Hent posisjon (NÅ I X,Y METER) og retning
         estimert_pos_xy, estimert_retning = les_sensorer_og_kalman()
-        print("NY SENSOR LESNING!!!!!!!!!!!!!!!!")
+        # print("NY SENSOR LESNING!!!!!!!!!!!!!!!!")
         next_time = time.time()
         
         # 2. Sjekk for hindringer
@@ -253,7 +253,7 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
             vinkel_feil += 360
             
         # 5. Send til motor
-        print(f"Vinkel feil til motor: {vinkel_feil} og mål posisjon: {maal_pos_xy[0]},{maal_pos_xy[1]}")
+        # print(f"Vinkel feil til motor: {vinkel_feil} og mål posisjon: {maal_pos_xy[0]},{maal_pos_xy[1]}")
         styr_motorer(-0.5, vinkel_feil)
         
         # # 6. Kontroller hastigheten på løkken (1000 Hz)
