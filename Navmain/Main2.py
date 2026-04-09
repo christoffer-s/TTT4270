@@ -280,7 +280,7 @@ x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
 
 Rd = np.diag([1, 1, 1,  1, 1, 1, 1]) #pos, euler_angles
 Qd = np.diag([1, 1, 1,  1, 1, 1,  10, 10, 10,  10, 10, 10])
-P_prd = np.zeros((15,15))
+P_prd = np.eyr(15) # EYE NOT ZEROS 
 
 f_fast = 1000
 f_slow = 10
