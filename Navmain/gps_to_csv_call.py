@@ -28,6 +28,7 @@ def get_gps():
 #			if isInstance(msg, pynmea2.RMC): # and msg.status == 'A':
 #			data_csv.append([msg.latitude, msg.longitude, msg.speed_kph])
 			data_csv = np.array([msg.latitude, msg.longitude])
+			gps_read = True
 			# return data_csv
 		except pynmea2.ParseError as e:
 			print("ParseError")
@@ -35,6 +36,7 @@ def get_gps():
 			print(f"Error {e}")
 	else:
 		data_csv = np.array([0.0,0.0])
+		gps_read = False
 		# time.sleep(0.1)
 	
 	file_path = 'gps_data.csv'
@@ -43,7 +45,7 @@ def get_gps():
 		csv_writer = csv.writer(file)
 		csv_writer.writerow(data_csv)
 	# print("CSV file made")
-	return data_csv
+	return data_csv, gps_read
 
 
 

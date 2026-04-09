@@ -24,7 +24,7 @@ import skew as sk
 
 
 
-def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None):
+def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=None):
     T_acc = 10
     T_ars = 10 #Switched from 1000
 
@@ -75,7 +75,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos=None):
               [O3, O3, O3, I3]])
     
     # Kalman filter algorithm
-    if y_pos:
+    if gps_read == False:
         P_hat = P_prd
     else:
         # EKSF gain: K[k]

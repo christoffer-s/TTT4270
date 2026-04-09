@@ -113,17 +113,16 @@ def les_sensorer_og_kalman():
     f_imu, w_imu = acc.IMU()
 
     # Henter rå-GPS fra modulen din
-    pos = gps_to_csv_call.get_gps()
+    pos, gps_read = gps_to_csv_call.get_gps()
     if pos[0] == 0:
-        y_pos = None
-        print("NO GPS")
-        Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu)
+        # print("NO GPS")
+        Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read)
     else:
         raw_lon = pos[1]
         raw_lat = pos[0]
         gps_x, gps_y = lon_lat_til_xy(raw_lon, raw_lat)
         y_pos = np.array([gps_x, gps_y, 0]).T
-        Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
+        Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos)
 
     # x_ins, P_prd = Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     # estimert_retning = 90.0 # Bilen peker mot Øst
@@ -259,7 +258,7 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
         # # 6. Kontroller hastigheten på løkken (1000 Hz)
         next_time += 1/1000
         sleep_time = next_time - time.time()
-        print(f"Sleep time: {sleep_time}")
+        # print(f"Sleep time: {sleep_time}")
         if sleep_time > 0:
             time.sleep(sleep_time)
         else:
@@ -285,7 +284,7 @@ P_prd = np.zeros((15,15))
 f_fast = 1000
 f_slow = 10
 
-h = 1/f_slow 
+h = 1/f_fast
 h_slow = 1/f_slow
 
 
