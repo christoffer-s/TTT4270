@@ -4,23 +4,22 @@ from scipy.linalg import expm
 import skew as sk
 
 
-# % Inputs:
-# %   x_ins[k] : INS state vector at step k, includes position, velocity,
-# %              accelerometer biases, attitude (Euler angles), and gyro biases.
-# %   P_prd[k] : 15x15 covariance matrix of the prediction step.
-# %   
-# %   h        : Sampling time in seconds.
-# %   Qd, Rd   : Process and measurement noise covariance matrices for the
-# %              Kalman filter.
-# %   f_imu[k] : Specific force measurements from the IMU.
-# %   w_imu[k] : Angular rate measurements from the IMU.
-# %   
-# %   y_pos[k] : Slow position measurements aids the filter.
-# %   y_vel[k] : (Optionally) Slow velocity measurements aids the filter.
-
-# % Outputs:
-# %   x_ins[k+1] - Updated INS state vector after propagation.
-# %   P_prd[k+1] - Updated prediction covariance matrix after propagation.
+#  Inputs:
+#    x_ins[k] : INS state vector at step k, includes position, velocity,
+#               accelerometer biases, attitude (Euler angles), and gyro biases.
+#    P_prd[k] : 15x15 covariance matrix of the prediction step.
+#    
+#    h        : Sampling time in seconds.
+#    Qd, Rd   : Process and measurement noise covariance matrices for the
+#               Kalman filter.
+#    f_imu[k] : Specific force measurements from the IMU.
+#    w_imu[k] : Angular rate measurements from the IMU.
+#    
+#    y_pos[k] : Slow position measurements aids the filter.
+#    y_vel[k] : (Optionally) Slow velocity measurements aids the filter.
+#  Outputs:
+#    x_ins[k+1] - Updated INS state vector after propagation.
+#    P_prd[k+1] - Updated prediction covariance matrix after propagation.
 
 
 
@@ -95,7 +94,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
         P_hat = IKC @ P_prd @ IKC + K @ Rd @ K.T
 
         # INS reset: x_ins[k]
-        print(f"Delta_x_hat: {delta_x_hat}")     #CHECK IF DELTA_X_HAT IS GIVING TO RIGHT PLACES
+        print(f"Delta_x_hat: {delta_x_hat}")     
         p_ins = p_ins + delta_x_hat[0:3];	         # Reset INS position
         v_ins = v_ins + delta_x_hat[3:6];			 # Reset INS velocity
         b_acc_ins = b_acc_ins + delta_x_hat[6:9];    # Reset ACC bias
@@ -107,23 +106,13 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
 
     # INS propagation: x_ins[k+1]
     a_ins = R @ f_ins + g_n
-    # print(f"a_ins: {a_ins}")
     p_ins = p_ins + h * v_ins + h**2/2 * a_ins
     v_ins = v_ins + h * a_ins
     print(f"p_ins: {p_ins}")
     theta_ins = theta_ins + h * Rot.from_euler(
         'zyx',[theta_ins[0],theta_ins[1], theta_ins[2]]).apply(w_ins)
-    # Potensielt gå med r.apply(w_ins) istedet
 
     x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
-    # print("Kalman filter sequence complete")
+
 
     return x_ins, P_prd
-# How to initialize ins
-# p_ins = np.array([0, 0, 0]).T
-# v_ins = np.array([0, 0, 0]).T
-# b_acc_ins = np.array([0, 0, 0]).T
-# theta_ins = np.array([0, 0, 0]).T
-# b_ars_ins = np.array([0, 0, 0]).T
-# x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
-

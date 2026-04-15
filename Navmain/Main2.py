@@ -15,6 +15,7 @@ import gps_to_csv_call
 from Fossen_euler import updateKalmanFilter
 import acc
 import motor_ctrl
+import tof
 
 # ==========================================
 # 0. DEFINISJON AV ORIGO (LOKALT KOORDINATSYSTEM)
@@ -133,7 +134,9 @@ def les_sensorer_og_kalman():
 
 def les_tof_sensor():
     """Leser TOF-sensor og returnerer avstand til hindring i meter."""
-    return 10.0 # 10 meter = fri vei
+    if tof.read_tof() > 0:
+        return 10.0 # 10 meter = fri vei
+    return 0 
 
 
 
