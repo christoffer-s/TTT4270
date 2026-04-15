@@ -153,7 +153,7 @@ def styr_motorer(fart, sving_vinkel):
 
 
     turn_rate = 0 # For testing uten at den svinger
-    motor_ctrl.drive.drive(forward_speed=fart,turn_rate=turn_rate)
+    motor_ctrl.drive.Drive(forward_speed=fart,turn_rate=turn_rate)
 
     # """Sender fart og styrevinkel til motorkontrolleren."""
     # print(f"[MOTOR] Fart: {fart} | Styrevinkel: {sving_vinkel:.1f} grader")
