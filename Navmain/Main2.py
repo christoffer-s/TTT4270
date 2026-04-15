@@ -217,7 +217,7 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
         hindring_avstand = les_tof_sensor()
         
         
-        if hindring_avstand < 0.5 and (prev_tof_check - estimert_pos_xy > (1,1)) or hindring_avstand < 0.5 and noTofRead: # 50 cm grense
+        if (hindring_avstand < 0.5 and prev_tof_check[0] - estimert_pos_xy[0] > 1 and prev_tof_check[1] - estimert_pos_xy[1] > 1) or (hindring_avstand < 0.5 and noTofRead): # 50 cm grense
             print("\n🚨 HINDRING OPPDAGET! Stopper bilen.")
             brems_bilen()
             time.sleep(1) 
@@ -318,7 +318,7 @@ if __name__ == "__main__":
     # 2. Definer ruten med rå GPS, og konverter til Lokalt X/Y
     # start_lon_lat = (10.402332799157428, 63.41809573255258) 
     maal_lon_lat = (10.405400716816052, 63.41672421102855)
-    prev_tof_check = (np.array([0,0,0]),np.array([0,0,0]))
+    prev_tof_check = (0,0)
     noTofRead = True
     # min_start_xy = lon_lat_til_xy(start_lon_lat[0], start_lon_lat[1]) 
     min_start_xy = (x_ins[0][0], x_ins[0][1])
