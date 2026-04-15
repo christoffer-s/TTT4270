@@ -134,7 +134,9 @@ def les_sensorer_og_kalman():
 
 def les_tof_sensor():
     """Leser TOF-sensor og returnerer avstand til hindring i meter."""
-    if tof.read_tof() > 0:
+    distance = tof.read_tof()
+    print(distance)
+    if distance > 0:
         return 10.0 # 10 meter = fri vei
     return 0 
 
