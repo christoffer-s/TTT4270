@@ -204,7 +204,8 @@ def beregn_ny_rute(G, naa_pos_xy, neste_waypoint_xy, slutt_maal_xy):
 def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
     """Kjører bilen langs ruten, sjekker hindringer og styrer mot målet."""
     naavaerende_waypoint_indeks = 1 
-    
+    global prev_tof_check
+    global noTofRead
     print("\n--- STARTER SELVKJØRING ---")
     while naavaerende_waypoint_indeks < len(waypoints_xy):
         # 1. Hent posisjon (NÅ I X,Y METER) og retning
@@ -220,8 +221,7 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
             print("\n🚨 HINDRING OPPDAGET! Stopper bilen.")
             brems_bilen()
             time.sleep(1) 
-            global prev_tof_check
-            global noTofRead
+            
             noTofRead = False
             prev_tof_check = estimert_pos_xy
 
