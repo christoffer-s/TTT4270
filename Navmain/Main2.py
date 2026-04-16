@@ -126,7 +126,8 @@ def les_sensorer_og_kalman():
         y_pos = np.array([gps_x, gps_y, 0]).T
         # print(f"ypos: {y_pos}")
         x_ins, P_prd = updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read=True, y_pos=y_pos)
-
+    
+    print("Heading: ", x_ins[3][2])
     # x_ins, P_prd = Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     # estimert_retning = 90.0 # Bilen peker mot Øst
     # print(f"x_ins returned from les sensorer: {x_ins[0][0]} & {x_ins[0][1]}")
@@ -145,9 +146,9 @@ def les_tof_sensor():
 
 def styr_motorer(fart, sving_vinkel):
     if sving_vinkel > 10:
-        turn_rate = 0.20
+        turn_rate = 0.-20
     elif sving_vinkel < -10:
-        turn_rate = -0.20
+        turn_rate = 0.20
     else:
         turn_rate = 0
     # turn_rate = 0 # For testing uten at den svinger
