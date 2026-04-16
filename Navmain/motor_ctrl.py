@@ -39,14 +39,14 @@ class Drive:
         self.back_left_motor = back_left_motor
         self.back_right_motor = back_right_motor
         self.speed = 0.5 #Default speed
-        self.turn_ratio = 0.5 #Default turn ratio
+        #self.turn_ratio = 0.5 #Default turn ratio
     
     def set_speed(self, speed):
         self.speed = speed
     
     def forward(self):
         self.right_motor.forward(self.speed)
-        self.left_motor.forward(self.speed)
+        self.left_motor.forward(self.speed)  # Kanskje må være backwards?
         self.back_left_motor.backward(self.speed) 
         self.back_right_motor.backward(self.speed)
     
@@ -69,8 +69,8 @@ class Drive:
         left  = max(-1, min(1, left))
 
         if right >= 0:
-            self.right_motor.forward(right)
-            self.back_right_motor.backward(right)
+            self.right_motor.backward(right)
+            self.back_right_motor.forward(right)
         else:
             self.right_motor.backward(abs(right))
             self.back_right_motor.forward(abs(right))
@@ -79,8 +79,8 @@ class Drive:
             self.left_motor.forward(left)
             self.back_left_motor.backward(left)
         else:
-            self.left_motor.backward(abs(left))
-            self.back_left_motor.forward(abs(left))
+            self.left_motor.forward(abs(left))  # Kanskje backward
+            self.back_left_motor.backward(abs(left))
 
     def stop(self):
         self.right_motor.stop()

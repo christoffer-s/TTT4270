@@ -144,15 +144,13 @@ def les_tof_sensor():
 
 
 def styr_motorer(fart, sving_vinkel):
-    # if sving_vinkel > 75:
-    #     turn_rate = 0.7
-    # elif sving_vinkel < -75:
-    #     turn_rate = -0.7
-    # else:
-    #     turn_rate = 0
-
-
-    turn_rate = 0 # For testing uten at den svinger
+    if sving_vinkel > 75:
+        turn_rate = 0.30
+    elif sving_vinkel < -75:
+        turn_rate = -0.30
+    else:
+        turn_rate = 0
+    # turn_rate = 0 # For testing uten at den svinger
     motor_ctrl.drive.drive(forward_speed=fart,turn_rate=turn_rate)
 
     # """Sender fart og styrevinkel til motorkontrolleren."""
@@ -267,7 +265,7 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
         # 5. Send til motor
         print(f"Vinkel feil til motor: {vinkel_feil} og mål posisjon: {maal_pos_xy[0]},{maal_pos_xy[1]}")
         print(f"Nåværenede posisjon og retning: {x_ins[0][0]}, {x_ins[0][1]} og {x_ins[3][2]}")
-        styr_motorer(-0.5, vinkel_feil)
+        styr_motorer(0.5, vinkel_feil)
         
         # # 6. Kontroller hastigheten på løkken (1000 Hz)
         next_time += 1/1000
