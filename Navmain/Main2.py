@@ -138,16 +138,16 @@ def les_tof_sensor():
     print(distance)
     if distance > 0:
         return 10.0 # 10 meter = fri vei
-    return 0 
+    return 10 
 
 
 
 
 def styr_motorer(fart, sving_vinkel):
-    if sving_vinkel > 75:
-        turn_rate = 0.30
-    elif sving_vinkel < -75:
-        turn_rate = -0.30
+    if sving_vinkel > 10:
+        turn_rate = 0.20
+    elif sving_vinkel < -10:
+        turn_rate = -0.20
     else:
         turn_rate = 0
     # turn_rate = 0 # For testing uten at den svinger
