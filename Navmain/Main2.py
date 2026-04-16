@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Now you can import
-import gps_to_csv_call
+from gps_to_csv_call import get_gps
 from Fossen_euler import updateKalmanFilter
 import acc
 import motor_ctrl
@@ -125,7 +125,7 @@ def les_sensorer_og_kalman():
     f_imu, w_imu = acc.IMU()
 
     # Henter rå-GPS fra modulen din
-    pos = gps_to_csv_call.get_gps()
+    pos = get_gps()
     if pos[0] == 0:
         # print("NO GPS")
         x_ins, P_prd = updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read=False)
