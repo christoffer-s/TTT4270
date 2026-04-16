@@ -5,6 +5,7 @@ import networkx as nx
 import sys
 import os
 import numpy as np
+import matplotlib as plt
 
 
 # Get the path of the parent directory (project_root)
@@ -78,6 +79,8 @@ def bygg_graf(geojson_data):
                 ideell_vinkel = beregn_vinkel_til_maal(p1[0], p1[1], p2[0], p2[1])
                 
                 G.add_edge(p1, p2, weight=avstand, ideal_heading=ideell_vinkel)
+    nx.draw(G, with_labels=True)
+    plt.show()
     return G
 
 def finn_naermeste_node(G, posisjon_xy):
