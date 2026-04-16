@@ -79,7 +79,7 @@ def bygg_graf(geojson_data):
                 ideell_vinkel = beregn_vinkel_til_maal(p1[0], p1[1], p2[0], p2[1])
                 
                 G.add_edge(p1, p2, weight=avstand, ideal_heading=ideell_vinkel)
-    nx.draw(G, with_labels=True)
+    nx.draw(G)
     plt.savefig("Graph.png")
     return G
 
@@ -318,12 +318,12 @@ if __name__ == "__main__":
         exit()
         
     # 2. Definer ruten med rå GPS, og konverter til Lokalt X/Y
-    # start_lon_lat = (10.402332799157428, 63.41809573255258) 
+    start_lon_lat = (10.402332799157428, 63.41809573255258) 
     maal_lon_lat = (10.405400716816052, 63.41672421102855)
     prev_tof_check = (0,0)
     noTofRead = True
     # min_start_xy = lon_lat_til_xy(start_lon_lat[0], start_lon_lat[1]) 
-    min_start_xy = (x_ins[0][0], x_ins[0][1])
+    min_start_xy = lon_lat_til_xy(start_lon_lat[0], start_lon_lat[1])
     mitt_maal_xy = lon_lat_til_xy(maal_lon_lat[0], maal_lon_lat[1])
     
     # 3. Bygg det matematiske kartet (Nodes er nå X, Y meter fra Origo!)
