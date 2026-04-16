@@ -79,8 +79,8 @@ def bygg_graf(geojson_data):
                 ideell_vinkel = beregn_vinkel_til_maal(p1[0], p1[1], p2[0], p2[1])
                 
                 G.add_edge(p1, p2, weight=avstand, ideal_heading=ideell_vinkel)
-    nx.draw(G)
-    plt.savefig("Graph.png")
+    # nx.draw(G)
+    # plt.savefig("Graph.png")
     return G
 
 def finn_naermeste_node(G, posisjon_xy):
@@ -328,6 +328,8 @@ if __name__ == "__main__":
     
     # 3. Bygg det matematiske kartet (Nodes er nå X, Y meter fra Origo!)
     G_kart = bygg_graf(kart_data)
+    nx.draw(G_kart)
+    plt.savefig("G_kart.png")
     
     # 4. Finn den første ruten
     waypoints_xy = finn_korteste_vei(G_kart, min_start_xy, mitt_maal_xy)
