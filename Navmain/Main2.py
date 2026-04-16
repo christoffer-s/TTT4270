@@ -101,6 +101,13 @@ def finn_korteste_vei(G, start_xy, slutt_xy):
     
     try:
         vei = nx.shortest_path(G, source=start_node, target=slutt_node, weight='weight')
+        path = vei
+        pos = nx.spring_layout(G)
+        nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray')
+        path_edges = list(zip(path, path[1:])) # Converts node list [1, 2, 3] to edges [(1,2), (2,3)]
+        nx.draw_networkx_nodes(G, pos, nodelist=path, node_color='yellow')
+        nx.draw_networkx_edges(G, pos, edgelist=path_edges, edge_color='red', width=3)
+        plt.savefig("Shortest path.png")
         return vei
     except nx.NetworkXNoPath:   
         print("Feil: Fant ingen vei mellom disse punktene.")
