@@ -101,13 +101,13 @@ def finn_korteste_vei(G, start_xy, slutt_xy):
     
     try:
         vei = nx.shortest_path(G, source=start_node, target=slutt_node, weight='weight')
-        path = vei
-        pos = nx.spring_layout(G)
-        nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray')
-        path_edges = list(zip(path, path[1:])) # Converts node list [1, 2, 3] to edges [(1,2), (2,3)]
-        nx.draw_networkx_nodes(G, pos, nodelist=path, node_color='yellow')
-        nx.draw_networkx_edges(G, pos, edgelist=path_edges, edge_color='red', width=3)
-        plt.savefig("Shortest path.png")
+                    # path = vei
+                    # pos = nx.spring_layout(G)
+                    # nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray')
+                    # path_edges = list(zip(path, path[1:])) # Converts node list [1, 2, 3] to edges [(1,2), (2,3)]
+                    # nx.draw_networkx_nodes(G, pos, nodelist=path, node_color='yellow')
+                    # nx.draw_networkx_edges(G, pos, edgelist=path_edges, edge_color='red', width=3)
+                    # plt.savefig("Shortest path.png")
         return vei
     except nx.NetworkXNoPath:   
         print("Feil: Fant ingen vei mellom disse punktene.")
@@ -155,12 +155,15 @@ def les_tof_sensor():
 
 
 def styr_motorer(fart, sving_vinkel):
-    if sving_vinkel > 10:
-        turn_rate = 0.-20
-    elif sving_vinkel < -10:
-        turn_rate = 0.20
-    else:
-        turn_rate = 0
+    # if sving_vinkel > 10:
+    #     turn_rate = 0.-20
+    # elif sving_vinkel < -10:
+    #     turn_rate = 0.20
+    # else:
+    #     turn_rate = 0
+
+    turn_rate = sving_vinkel/360
+
     # turn_rate = 0 # For testing uten at den svinger
     motor_ctrl.drive.drive(forward_speed=fart,turn_rate=turn_rate)
 
@@ -274,8 +277,8 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
             vinkel_feil += 360
             
         # 5. Send til motor
-        print(f"Vinkel feil til motor: {vinkel_feil} og mål posisjon: {maal_pos_xy[0]},{maal_pos_xy[1]}")
-        print(f"Nåværenede posisjon og retning: {x_ins[0][0]}, {x_ins[0][1]} og {x_ins[3][2]}")
+        print(f"Vinkel feil til motor: {vinkel_feil}, og mål posisjon: {maal_pos_xy[0]},{maal_pos_xy[1]}")
+        print(f"Nåværenede posisjon og retning: {estimert_pos_xy[0]}, {estimert_pos_xy[1]} og {estimert_retning}")
         styr_motorer(0.5, vinkel_feil)
         
         # # 6. Kontroller hastigheten på løkken (1000 Hz)
@@ -335,8 +338,8 @@ if __name__ == "__main__":
     
     # 3. Bygg det matematiske kartet (Nodes er nå X, Y meter fra Origo!)
     G_kart = bygg_graf(kart_data)
-    nx.draw(G_kart)
-    plt.savefig("G_kart.png")
+    # nx.draw(G_kart)
+    # plt.savefig("G_kart.png")
     
     # 4. Finn den første ruten
     waypoints_xy = finn_korteste_vei(G_kart, min_start_xy, mitt_maal_xy)
