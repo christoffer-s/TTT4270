@@ -2,6 +2,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation as Rot
 from scipy.linalg import expm
 import skew as sk
+from tzyx import tzyx
 
 
 #  Inputs:
@@ -24,8 +25,8 @@ import skew as sk
 
 
 def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=None):
-    T_acc = 10
-    T_ars = 10 #Switched from 1000
+    T_acc = 1000
+    T_ars = 1000 #Switched from 10
 
     # ESKF states and matrices
     p_ins = x_ins[0]
@@ -91,7 +92,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
         print(f"K: {K}")
         print(f"eps: {eps}")
         delta_x_hat = K @ eps
-        P_hat = IKC @ P_prd @ IKC + K @ Rd @ K.T
+        P_hat = IKC @ P_prd @ IKC.T + K @ Rd @ K.T # Added IKC.T was missing
 
         # INS reset: x_ins[k]
         print(f"Delta_x_hat: {delta_x_hat}")     
@@ -111,6 +112,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
     print(f"p_ins: {p_ins}")
     theta_ins = theta_ins + h * Rot.from_euler(
         'zyx',[theta_ins[0],theta_ins[1], theta_ins[2]]).apply(w_ins)
+    # theta_ins = theta_ins + h * tzyx(theta_ins[0],) @ w_ins
 
     x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
 
