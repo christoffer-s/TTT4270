@@ -43,7 +43,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
     I3 = np.eye(3)
 
     # Rotation matrix
-    r = Rot.from_euler('zyx', [theta_ins[0],theta_ins[1],theta_ins[2]], degrees=False)
+    r = Rot.from_euler('zyx', [theta_ins[2],theta_ins[1],theta_ins[0]], degrees=False) # Swapped 2 and 0
     R = np.array(r.as_matrix())
 
     # Bias compensated IMU measurements
@@ -111,7 +111,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
     v_ins = v_ins + h * a_ins
     print(f"p_ins: {p_ins}")
     theta_ins = theta_ins + h * Rot.from_euler(
-        'zyx',[theta_ins[0],theta_ins[1], theta_ins[2]]).apply(w_ins) #Potensielt bytte om 0 og 2 om ikke funket? også returnere [3][2]
+        'zyx',[theta_ins[2],theta_ins[1], theta_ins[0]]).apply(w_ins) #Potensielt bytte om 0 og 2 om ikke funket? også returnere [3][2]
     # theta_ins = theta_ins + h * tzyx(theta_ins[0],) @ w_ins
 
     x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]

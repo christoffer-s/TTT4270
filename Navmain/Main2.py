@@ -141,7 +141,7 @@ def les_sensorer_og_kalman():
     # x_ins, P_prd = Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     # estimert_retning = 90.0 # Bilen peker mot Øst
     # print(f"x_ins returned from les sensorer: {x_ins[0][0]} & {x_ins[0][1]}")
-    return (x_ins[0][0], x_ins[0][1]), x_ins[3][0] # Changed from [3][2], check up in what is yaw, pitch, roll
+    return (x_ins[0][0], x_ins[0][1]), x_ins[3][2] # Changed from [3][2], check up in what is yaw, pitch, roll
 
 def les_tof_sensor():
     """Leser TOF-sensor og returnerer avstand til hindring i meter."""
