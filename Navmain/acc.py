@@ -16,4 +16,5 @@ mpu = adafruit_mpu6050.MPU6050(i2c)
 def IMU():
     acc = np.array(mpu.acceleration).T
     gyro = np.array(mpu.gyro).T
+    print(f"GYRO 0: {gyro[0]},    GYRO 1: {gyro[1]},    GYRO 2: {gyro[2]}")
     return acc, gyro
