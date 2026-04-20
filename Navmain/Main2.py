@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 # Now you can import
 from gps_to_csv_call import get_gps
 from Fossen_euler import updateKalmanFilter
-import acc_old
+import acc
 import motor_ctrl
 import tof
 
