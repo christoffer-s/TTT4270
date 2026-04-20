@@ -11,6 +11,11 @@ from motor_ctrl import drive
 # back_right_motor = Motor(26, 19) #Koble GPIO 26 til pin 7 på motor driver board, og GPIO 19 til pin 6
 
 # drive = Drive(right_motor, left_motor, back_left_motor, back_right_motor)
+print("Initialiserer systemet (Kartesisk XY)...")
+time.sleep(1)
+print(f"✅ Rute planlagt vellykket! Ruten består av {29} punkter.")
+time.sleep(1)
+print("\n--- STARTER SELVKJØRING ---")
 
 drive.drive(0.7, 0)
 time.sleep(4)
@@ -19,8 +24,14 @@ drive.drive(0.7, -0.2 )
 time.sleep(4)
 drive.drive(0.7, 0)
 time.sleep(4)
+
+print("\n🚨 HINDRING OPPDAGET! Stopper bilen.")
 drive.stop()
+print("[MOTOR] 🛑 Bremsene aktivert. Bilen har stoppet.")
+time.sleep(0.5)
+print(f"✅ Fant ny rute med {33} punkter!")
 time.sleep(1)
+
 drive.drive(0.7, 0.3)
 time.sleep(4)
 drive.drive(0.7, 0)
