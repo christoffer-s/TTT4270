@@ -36,7 +36,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
     b_ars_ins = x_ins[4]
 
     # Gravity vector
-    g_n = np.array([[0,0,9.81]]).reshape(-1, 1)
+    g_n = np.array([[0,0,9.81]]).T
 
     # Constants
     O3 = np.zeros((3,3))
@@ -51,7 +51,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
     w_ins = w_imu - b_ars_ins
 
     # Normalized specific force
-    v01 = np.array([0,0,-1]).reshape(-1, 1)
+    v01 = np.array([[0,0,-1]]).T
     v1 = f_ins/np.linalg.norm(f_ins)
 
     # Discrete-time ESKF matrices, A, Ad, Cd & Ed
