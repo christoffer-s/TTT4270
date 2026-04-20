@@ -305,7 +305,7 @@ p_ins = np.array([0, 0, 0]).T
 v_ins = np.array([0, 0, 0]).T
 b_acc_ins = np.array([0.01, 0.01, 0.01]).T # Added small starting bias
 theta_ins = np.array([0, 0, 0]).T
-b_ars_ins = np.array([0.1, 0.1, 0.1]).T # Added small starting bias
+b_ars_ins = np.array([10, 10, 10]).T # Added small starting bias
 x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
 
 Rd = np.diag([1, 1, 1,  10, 10, 10, 10]) #pos, euler_angles
