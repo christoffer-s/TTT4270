@@ -122,7 +122,7 @@ def les_sensorer_og_kalman():
     global x_ins 
     global P_prd
     #AKSELEROMETER DATA:
-    f_imu, w_imu = acc_old.IMU()
+    f_imu, w_imu = acc.IMU()
 
     # Henter rå-GPS fra modulen din
     pos = get_gps()
