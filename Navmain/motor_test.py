@@ -12,12 +12,12 @@ from motor_ctrl import drive
 
 # drive = Drive(right_motor, left_motor, back_left_motor, back_right_motor)
 
-drive.drive(0.3, 0)
+drive.drive(0.7, 0)
 time.sleep(4)
-drive.drive(-0.3, 0)
 time.sleep(4)
-drive.drive(0.3, -0.15 )
+drive.drive(0.7, -0.2 )
 time.sleep(4)
-drive.drive(0.3, 0.15)
+drive.drive(0.7, 0)
 time.sleep(4)
 drive.stop()
+drive.drive(0.7, 0.5 )
