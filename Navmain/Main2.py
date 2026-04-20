@@ -137,7 +137,7 @@ def les_sensorer_og_kalman():
         # print(f"ypos: {y_pos}")
         x_ins, P_prd = updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read=True, y_pos=y_pos)
     
-    print("Heading: ", x_ins[3][2])
+    print("Theata: ", x_ins[3])
     # x_ins, P_prd = Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     # estimert_retning = 90.0 # Bilen peker mot Øst
     # print(f"x_ins returned from les sensorer: {x_ins[0][0]} & {x_ins[0][1]}")
