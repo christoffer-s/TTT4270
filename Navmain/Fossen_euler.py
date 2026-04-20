@@ -119,7 +119,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
     theta_ins = theta_ins + h * T @ w_ins
     # theta_ins = theta_ins + h * tzyx(theta_ins[0],) @ w_ins
 
-    x_ins = np.arry([p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins])
+    x_ins = np.array([p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins])
 
 
     return x_ins, P_prd
