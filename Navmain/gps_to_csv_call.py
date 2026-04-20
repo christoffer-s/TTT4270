@@ -28,7 +28,7 @@ def get_gps():
 #			if isInstance(msg, pynmea2.RMC): # and msg.status == 'A':
 #			data_csv.append([msg.latitude, msg.longitude, msg.speed_kph])
 			data_csv = np.array([msg.latitude, msg.longitude])
-			print(f"GPS DATA READ: {data_csv}")
+			# print(f"GPS DATA READ: {data_csv}")
 			# return data_csv
 		except pynmea2.ParseError as e:
 			print("ParseError")

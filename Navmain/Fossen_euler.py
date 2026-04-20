@@ -36,7 +36,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
     b_ars_ins = x_ins[4]
 
     # Gravity vector
-    g_n = np.array([0,0, 9.81]).T
+    g_n = np.array([[0],[0],[9.81]])
 
     # Constants
     O3 = np.zeros((3,3))
@@ -51,7 +51,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
     w_ins = w_imu - b_ars_ins
 
     # Normalized specific force
-    v01 = np.array([0,0,-1]).T
+    v01 = np.array([0],[0],[-1])
     v1 = f_ins/np.linalg.norm(f_ins)
 
     # Discrete-time ESKF matrices, A, Ad, Cd & Ed
@@ -89,13 +89,10 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
         eps = np.hstack([eps_pos, eps_g, eps_psi])
 
         # Corrector: delta_x_hat[k] and P_hat[k]
-        print(f"K: {K}")
-        print(f"eps: {eps}")
         delta_x_hat = K @ eps
         P_hat = IKC @ P_prd @ IKC.T + K @ Rd @ K.T # Added IKC.T was missing
 
         # INS reset: x_ins[k]
-        print(f"Delta_x_hat: {delta_x_hat}")     
         p_ins = p_ins + delta_x_hat[0:3];	         # Reset INS position
         v_ins = v_ins + delta_x_hat[3:6];			 # Reset INS velocity
         b_acc_ins = b_acc_ins + delta_x_hat[6:9];    # Reset ACC bias
@@ -109,12 +106,20 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
     a_ins = R @ f_ins + g_n
     p_ins = p_ins + h * v_ins + h**2/2 * a_ins
     v_ins = v_ins + h * a_ins
-    print(f"p_ins: {p_ins}")
-    theta_ins = theta_ins + h * Rot.from_euler(
-        'zyx',[theta_ins[2],theta_ins[1], theta_ins[0]]).apply(w_ins) #Potensielt bytte om 0 og 2 om ikke funket? også returnere [3][2]
+    # theta_ins = theta_ins + h * Rot.from_euler(
+        # 'zyx',[theta_ins[2],theta_ins[1], theta_ins[0]]).apply(w_ins) #Potensielt bytte om 0 og 2 om ikke funket? også returnere [3][2]
+    # theta_ins = theta_ins + h * tzyx(theta_ins[0],) @ w_ins
+    # Compute the Euler rate transformation matrix for 'zyx' convention
+    phi, theta, psi = theta_ins[0], theta_ins[1], theta_ins[2]
+    T = np.array([
+        [1, np.sin(phi)*np.tan(theta), np.cos(phi)*np.tan(theta)],
+        [0, np.cos(phi), -np.sin(phi)],
+        [0, np.sin(phi)/np.cos(theta), np.cos(phi)/np.cos(theta)]
+    ])
+    theta_ins = theta_ins + h * T @ w_ins
     # theta_ins = theta_ins + h * tzyx(theta_ins[0],) @ w_ins
 
-    x_ins = [p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins]
+    x_ins = np.arry([p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins])
 
 
     return x_ins, P_prd

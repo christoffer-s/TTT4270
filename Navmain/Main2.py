@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 # Now you can import
 from gps_to_csv_call import get_gps
 from Fossen_euler import updateKalmanFilter
-import acc
+import acc_old
 import motor_ctrl
 import tof
 
@@ -122,7 +122,7 @@ def les_sensorer_og_kalman():
     global x_ins 
     global P_prd
     #AKSELEROMETER DATA:
-    f_imu, w_imu = acc.IMU()
+    f_imu, w_imu = acc_old.IMU()
 
     # Henter rå-GPS fra modulen din
     pos = get_gps()
@@ -137,7 +137,7 @@ def les_sensorer_og_kalman():
         # print(f"ypos: {y_pos}")
         x_ins, P_prd = updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read=True, y_pos=y_pos)
     
-    print("Heading: ", x_ins[3][2])
+    # print("Heading: ", x_ins[3][2])
     # x_ins, P_prd = Fossen_euler.updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, y_pos)
     # estimert_retning = 90.0 # Bilen peker mot Øst
     # print(f"x_ins returned from les sensorer: {x_ins[0][0]} & {x_ins[0][1]}")
@@ -146,7 +146,7 @@ def les_sensorer_og_kalman():
 def les_tof_sensor():
     """Leser TOF-sensor og returnerer avstand til hindring i meter."""
     distance = tof.read_tof()
-    print(distance)
+    # print(distance)
     if distance > 0:
         return 10.0 # 10 meter = fri vei
     return 10 
@@ -219,76 +219,81 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
     global prev_tof_check
     global noTofRead
     print("\n--- STARTER SELVKJØRING ---")
-    while naavaerende_waypoint_indeks < len(waypoints_xy):
-        # 1. Hent posisjon (NÅ I X,Y METER) og retning
-        estimert_pos_xy, estimert_retning = les_sensorer_og_kalman()
-        # print("NY SENSOR LESNING!!!!!!!!!!!!!!!!")
-        next_time = time.time()
-        
-        # 2. Sjekk for hindringer
-        hindring_avstand = les_tof_sensor()
-        
-        
-        if (hindring_avstand < 0.5 and prev_tof_check[0] - estimert_pos_xy[0] > 1 and prev_tof_check[1] - estimert_pos_xy[1] > 1) or (hindring_avstand < 0.5 and noTofRead): # 50 cm grense
-            print("\n🚨 HINDRING OPPDAGET! Stopper bilen.")
-            brems_bilen()
-            time.sleep(1) 
-            
-            noTofRead = False
-            prev_tof_check = estimert_pos_xy
+    try:
+        next_time = time.perf_counter()
+        while naavaerende_waypoint_indeks < len(waypoints_xy):
+            # 1. Hent posisjon (NÅ I X,Y METER) og retning
+            estimert_pos_xy, estimert_retning = les_sensorer_og_kalman()
+            # print("NY SENSOR LESNING!!!!!!!!!!!!!!!!")
 
-            
-            print("Planlegger ny rute rundt hindringen...")
-            neste_punkt_xy = waypoints_xy[naavaerende_waypoint_indeks]
-            nye_waypoints = beregn_ny_rute(G, estimert_pos_xy, neste_punkt_xy, slutt_maal_xy)
-            
-            if nye_waypoints:
-                print(f"✅ Fant ny rute med {len(nye_waypoints)} punkter!")
-                waypoints_xy = nye_waypoints 
-                naavaerende_waypoint_indeks = 1 
-                continue 
-            else:
-                print("❌ Bilen kan ikke fortsette. Ruten er totalt blokkert.")
-                break 
 
-        # 3. Sjekk progresjon mot neste (X, Y)-punkt
-        maal_pos_xy = waypoints_xy[naavaerende_waypoint_indeks]
-        avstand_til_maal = beregn_avstand(estimert_pos_xy[0], estimert_pos_xy[1], maal_pos_xy[0], maal_pos_xy[1])
-        
-        if avstand_til_maal < 2.0:
-            print(f"📍 Nådd waypoint {naavaerende_waypoint_indeks}! Bytter til neste.")
-            naavaerende_waypoint_indeks += 1
-            
-            if naavaerende_waypoint_indeks >= len(waypoints_xy):
-                print("🏁 Mål nådd! Bilen parkerer.")
+            # 2. Sjekk for hindringer
+            hindring_avstand = les_tof_sensor()
+
+
+            if (hindring_avstand < 0.5 and prev_tof_check[0] - estimert_pos_xy[0] > 1 and prev_tof_check[1] - estimert_pos_xy[1] > 1) or (hindring_avstand < 0.5 and noTofRead): # 50 cm grense
+                print("\n🚨 HINDRING OPPDAGET! Stopper bilen.")
                 brems_bilen()
-                break
-            
+                time.sleep(1) 
+
+                noTofRead = False
+                prev_tof_check = estimert_pos_xy
+
+
+                print("Planlegger ny rute rundt hindringen...")
+                neste_punkt_xy = waypoints_xy[naavaerende_waypoint_indeks]
+                nye_waypoints = beregn_ny_rute(G, estimert_pos_xy, neste_punkt_xy, slutt_maal_xy)
+
+                if nye_waypoints:
+                    print(f"✅ Fant ny rute med {len(nye_waypoints)} punkter!")
+                    waypoints_xy = nye_waypoints 
+                    naavaerende_waypoint_indeks = 1 
+                    continue 
+                else:
+                    print("❌ Bilen kan ikke fortsette. Ruten er totalt blokkert.")
+                    break 
+
+            # 3. Sjekk progresjon mot neste (X, Y)-punkt
             maal_pos_xy = waypoints_xy[naavaerende_waypoint_indeks]
-            
-        # 4. Regn ut styrevinkel mot (X, Y)
-        maal_vinkel = beregn_vinkel_til_maal(estimert_pos_xy[0], estimert_pos_xy[1], maal_pos_xy[0], maal_pos_xy[1])
-        vinkel_feil = maal_vinkel - estimert_retning
-        
-        # Normaliser for å finne korteste vei å svinge
-        if vinkel_feil > 180:
-            vinkel_feil -= 360
-        elif vinkel_feil < -180:
-            vinkel_feil += 360
-            
-        # 5. Send til motor
-        print(f"Vinkel feil til motor: {vinkel_feil}, og mål posisjon: {maal_pos_xy[0]},{maal_pos_xy[1]}")
-        print(f"Nåværenede posisjon og retning: {estimert_pos_xy[0]}, {estimert_pos_xy[1]} og {estimert_retning}")
-        styr_motorer(0.5, vinkel_feil)
-        
-        # # 6. Kontroller hastigheten på løkken (1000 Hz)
-        next_time += 1/1000
-        sleep_time = next_time - time.time()
-        # print(f"Sleep time: {sleep_time}")
-        if sleep_time > 0:
-            time.sleep(sleep_time)
-        else:
-            pass
+            avstand_til_maal = beregn_avstand(estimert_pos_xy[0], estimert_pos_xy[1], maal_pos_xy[0], maal_pos_xy[1])
+
+            if avstand_til_maal < 2.0:
+                print(f"📍 Nådd waypoint {naavaerende_waypoint_indeks}! Bytter til neste.")
+                naavaerende_waypoint_indeks += 1
+
+                if naavaerende_waypoint_indeks >= len(waypoints_xy):
+                    print("🏁 Mål nådd! Bilen parkerer.")
+                    brems_bilen()
+                    break
+                
+                maal_pos_xy = waypoints_xy[naavaerende_waypoint_indeks]
+
+            # 4. Regn ut styrevinkel mot (X, Y)
+            maal_vinkel = beregn_vinkel_til_maal(estimert_pos_xy[0], estimert_pos_xy[1], maal_pos_xy[0], maal_pos_xy[1])
+            vinkel_feil = maal_vinkel - estimert_retning
+
+            # Normaliser for å finne korteste vei å svinge
+            if vinkel_feil > 180:
+                vinkel_feil -= 360
+            elif vinkel_feil < -180:
+                vinkel_feil += 360
+
+            # 5. Send til motor
+            # print(f"Vinkel feil til motor: {vinkel_feil}, og mål posisjon: {maal_pos_xy[0]},{maal_pos_xy[1]}")
+            # print(f"Nåværenede posisjon og retning: {estimert_pos_xy[0]}, {estimert_pos_xy[1]} og {estimert_retning}")
+            styr_motorer(0.5, vinkel_feil)
+
+            # # 6. Kontroller hastigheten på løkken (1000 Hz)
+            next_time += 0.001
+            sleep_time = next_time - time.perf_counter()
+            # print(f"Sleep time: {sleep_time}")
+            if sleep_time > 0:
+                time.sleep(sleep_time)
+            elif sleep_time < -0.001:
+                next_time = time.perf_counter()
+
+    except KeyboardInterrupt:
+        print(f"Avslutter...")
 
 
 # ==========================================

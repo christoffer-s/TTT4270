@@ -1,20 +1,22 @@
+import smbus2
 import time
-import board
-import adafruit_mpu6050
+import struct
 import numpy as np
 
-i2c = board.I2C() # uses board.SCL and board.SDA
-# i2c = board.STEMMA_I2C() # For using the built-in STEMMA QT connector on a microcontroller
-mpu = adafruit_mpu6050.MPU6050(i2c)
-# while True:
-#     print("Acceleration: X:%.2f, Y: %.2f, Z: %.2f m/s^2" % (mpu.acceleration))
-#     print("Gyro X:%.2f, Y: %.2f, Z: %.2f rad/s" % (mpu.gyro))
-#     print("Temperature: %.2f C" % mpu.temperature)
-#     print("")
-#     time.sleep(1)
+MPU_ADDR = 0x68
+ACCEL_XOUT_H = 0x3B
+ACCEL_SCALE = 16384.0  # For +/- 2g
+GYRO_SCALE = 131.0     # For +/- 250 deg/s
+
+bus = smbus2.SMBus(1)
+# Wake up & 1kHz modus (DLPF)
+bus.write_byte_data(MPU_ADDR, 0x6B, 0)
+bus.write_byte_data(MPU_ADDR, 0x1A, 1)
 
 def IMU():
-    acc = np.array(mpu.acceleration).T
-    gyro = np.array(mpu.gyro).T
-    print(f"GYRO 0: {gyro[0]},    GYRO 1: {gyro[1]},    GYRO 2: {gyro[2]}")
-    return acc, gyro
+    raw = bus.read_i2c_block_data(MPU_ADDR, ACCEL_XOUT_H, 14)
+    data = struct.unpack('>7h', bytes(raw))
+    
+    f_imu = data[0:3]
+    w_imu = data[3:6]
+    return f_imu, w_imu
