@@ -19,5 +19,5 @@ def IMU():
     
     f_imu = data[0:3]
     w_imu = data[3:6]
-    print(f"f {f_imu}, w {w_imu}")
+    # print(f"f {f_imu}, w {w_imu}")
     return f_imu, w_imu
