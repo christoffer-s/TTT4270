@@ -106,17 +106,16 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
     a_ins = R @ f_ins + g_n
     p_ins = p_ins + h * v_ins + h**2/2 * a_ins
     v_ins = v_ins + h * a_ins
-    # theta_ins = theta_ins + h * Rot.from_euler(
-        # 'zyx',[theta_ins[2],theta_ins[1], theta_ins[0]]).apply(w_ins) #Potensielt bytte om 0 og 2 om ikke funket? også returnere [3][2]
-    # theta_ins = theta_ins + h * tzyx(theta_ins[0],) @ w_ins
-    # Compute the Euler rate transformation matrix for 'zyx' convention
-    phi, theta, psi = theta_ins[0], theta_ins[1], theta_ins[2]
-    T = np.array([
-        [1, np.sin(phi)*np.tan(theta), np.cos(phi)*np.tan(theta)],
-        [0, np.cos(phi), -np.sin(phi)],
-        [0, np.sin(phi)/np.cos(theta), np.cos(phi)/np.cos(theta)]
-    ])
-    theta_ins = theta_ins + h * T @ w_ins
+    theta_ins = theta_ins + h * Rot.from_euler(
+        'zyx',[theta_ins[2],theta_ins[1], theta_ins[0]]).apply(w_ins) #Potensielt bytte om 0 og 2 om ikke funket? også returnere [3][2]
+    # # Compute the Euler rate transformation matrix for 'zyx' convention
+    # phi, theta, psi = theta_ins[0], theta_ins[1], theta_ins[2]
+    # T = np.array([
+    #     [1, np.sin(phi)*np.tan(theta), np.cos(phi)*np.tan(theta)],
+    #     [0, np.cos(phi), -np.sin(phi)],
+    #     [0, np.sin(phi)/np.cos(theta), np.cos(phi)/np.cos(theta)]
+    # ])
+    # theta_ins = theta_ins + h * T @ w_ins
     # theta_ins = theta_ins + h * tzyx(theta_ins[0],) @ w_ins
 
     x_ins = np.array([p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins])
