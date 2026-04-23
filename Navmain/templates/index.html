@@ -22,7 +22,7 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
-    var map = L.map('map').setView([63.4305, 10.3951], 15);
+    var map = L.map('map').setView([63.4181, 10.4023], 16);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
@@ -34,17 +34,39 @@
         iconAnchor: [20, 20]
     });
 
-    var marker = L.marker([63.4305, 10.3951], { icon: boatIcon }).addTo(map);
+    var marker = L.marker([63.4181, 10.4023], { icon: boatIcon }).addTo(map);
+
+    // Tegn linjenettet fra GeoJSON i Navmain/static
+    fetch("{{ url_for('static', filename='LinjemapGløsV2.geojson') }}")
+        .then(response => response.json())
+        .then(geojson => {
+            var lineLayer = L.geoJSON(geojson, {
+                style: {
+                    color: "#d31717",
+                    weight: 4,
+                    opacity: 0.9
+                }
+            }).addTo(map);
+
+            if (lineLayer.getBounds().isValid()) {
+                map.fitBounds(lineLayer.getBounds(), { padding: [20, 20] });
+            }
+        })
+        .catch(error => {
+            console.error("Kunne ikke laste LinjemapGløsV2.geojson:", error);
+        });
 
     function updateGPS() {
         fetch("/gps")
             .then(response => response.json())
             .then(data => {
                 marker.setLatLng([data.lat, data.lon]);
-                map.setView([data.lat, data.lon]);
+                // Hold zoom, men flytt sentrum til båt
+                map.panTo([data.lat, data.lon], { animate: false });
             });
     }
 
+    updateGPS();
     setInterval(updateGPS, 1000);
 </script>
 

@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 def _get_gps_safe():
     try:
-        from KalmanFilter.mock_gps import get_gps  # lazy import
+        from Navmain.mock_gps import get_gps  # lazy import
         return get_gps()
     except Exception:
         # Fallback så webserveren fortsatt kjører
