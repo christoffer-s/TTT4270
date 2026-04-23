@@ -120,6 +120,8 @@ def les_sensorer_og_kalman():
         y_pos = np.array([gps_x, gps_y, 0]).T
         x_ins, P_prd = updateKalmanFilter(x_ins, P_prd, h, Qd, 
                                           Rd, f_imu, w_imu, gps_read=True, y_pos=y_pos)
+        
+    print(f"Posisjon{x_ins[0]} \n vinkler: {x_ins[3]}")
     return (x_ins[0][0], x_ins[0][1]), x_ins[3][2] 
 
 def les_tof_sensor():
