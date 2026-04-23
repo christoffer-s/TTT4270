@@ -25,8 +25,8 @@ import skew as sk
 
 
 def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=None):
-    T_acc = 1000
-    T_ars = 1000 #Switched from 10
+    T_acc = 500
+    T_ars = 500
 
     # ESKF states and matrices
     p_ins = x_ins[0]
@@ -43,7 +43,7 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
     I3 = np.eye(3)
 
     # Rotation matrix
-    r = Rot.from_euler('zyx', [theta_ins[2],theta_ins[1],theta_ins[0]], degrees=False) # Swapped 2 and 0
+    r = Rot.from_euler('zyx', [theta_ins[2],theta_ins[1],theta_ins[0]], degrees=False)
     R = np.array(r.as_matrix())
 
     # Bias compensated IMU measurements
@@ -83,14 +83,14 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
         IKC = np.eye(15) - K @ Cd
 
         # Estimate error: eps[k]
-        eps_pos = y_pos - p_ins
+        eps_pos = y_pos - p_ins #delta_y
         eps_g = v1 - R.T @ v01
         eps_psi = np.arctan2(v_ins[1],v_ins[0]) # ssa = arctan2
         eps = np.hstack([eps_pos, eps_g, eps_psi])
 
         # Corrector: delta_x_hat[k] and P_hat[k]
         delta_x_hat = K @ eps
-        P_hat = IKC @ P_prd @ IKC.T + K @ Rd @ K.T # Added IKC.T was missing
+        P_hat = IKC @ P_prd @ IKC.T + K @ Rd @ K.T
 
         # INS reset: x_ins[k]
         p_ins = p_ins + delta_x_hat[0:3];	         # Reset INS position
@@ -107,8 +107,15 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
     p_ins = p_ins + h * v_ins + h**2/2 * a_ins
     v_ins = v_ins + h * a_ins
     theta_ins = theta_ins + h * Rot.from_euler(
-        'zyx',[theta_ins[2],theta_ins[1], theta_ins[0]]).apply(w_ins) #Potensielt bytte om 0 og 2 om ikke funket? også returnere [3][2]
-    # # Compute the Euler rate transformation matrix for 'zyx' convention
+        'zyx',[theta_ins[2],theta_ins[1], theta_ins[0]]).apply(w_ins) 
+    
+    x_ins = np.array([p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins])
+
+    return x_ins, P_prd
+
+
+
+# # Compute the Euler rate transformation matrix for 'zyx' convention
     # phi, theta, psi = theta_ins[0], theta_ins[1], theta_ins[2]
     # T = np.array([
     #     [1, np.sin(phi)*np.tan(theta), np.cos(phi)*np.tan(theta)],
@@ -117,8 +124,3 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
     # ])
     # theta_ins = theta_ins + h * T @ w_ins
     # theta_ins = theta_ins + h * tzyx(theta_ins[0],) @ w_ins
-
-    x_ins = np.array([p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins])
-
-
-    return x_ins, P_prd
