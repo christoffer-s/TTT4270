@@ -121,7 +121,7 @@ def les_sensorer_og_kalman():
         x_ins, P_prd = updateKalmanFilter(x_ins, P_prd, h, Qd, 
                                           Rd, f_imu, w_imu, gps_read=True, y_pos=y_pos)
         
-    print(f"Posisjon{x_ins[0]} \n vinkler: {x_ins[3]}")
+    print(f"Posisjon{x_ins[0][0]}, {x_ins[0][1]}")
     return (x_ins[0][0], x_ins[0][1]), x_ins[3][2] 
 
 def les_tof_sensor():
@@ -204,6 +204,7 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
 
             # 3. Sjekk progresjon mot neste (X, Y)-punkt
             maal_pos_xy = waypoints_xy[naavaerende_waypoint_indeks]
+            print(f"Neste mål: {maal_pos_xy}")
             avstand_til_maal = beregn_avstand(estimert_pos_xy[0], estimert_pos_xy[1], maal_pos_xy[0], maal_pos_xy[1])
 
             if avstand_til_maal < 2.0:
@@ -277,7 +278,7 @@ if __name__ == "__main__":
         
     # 2. Definer ruten med rå GPS, og konverter til Lokalt X/Y
     start_lon_lat = (10.402332799157428, 63.41809573255258) 
-    maal_lon_lat = (10.405400716816052, 63.41672421102855)
+    maal_lon_lat = (10.402447, 63.418402)
     prev_tof_check = (0,0)
     noTofRead = True
     min_start_xy = lon_lat_til_xy(start_lon_lat[0], start_lon_lat[1])
