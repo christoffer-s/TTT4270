@@ -231,12 +231,12 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
             # 5. Send til motor
             styr_motorer(0.7, vinkel_feil)
 
-            # # 6. Kontroller hastigheten på løkken (500 Hz)
-            next_time += 0.002
+            # # 6. Kontroller hastigheten på løkken (1 kHz)
+            next_time += 0.001
             sleep_time = next_time - time.perf_counter()
             if sleep_time > 0:
                 time.sleep(sleep_time)
-            elif sleep_time < -0.002:
+            elif sleep_time < -0.001:
                 next_time = time.perf_counter()
 
     except KeyboardInterrupt:
@@ -260,7 +260,7 @@ Qd = np.diag([1, 1, 1,  1, 1, 1,  10, 10, 10,  10, 10, 10])
 
 P_prd = np.eye(15)
 
-f_fast = 500
+f_fast = 1000
 h = 1/f_fast
 
 

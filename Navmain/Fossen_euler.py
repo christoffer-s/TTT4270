@@ -25,8 +25,8 @@ import skew as sk
 
 
 def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=None):
-    T_acc = 500
-    T_ars = 500
+    T_acc = 1000
+    T_ars = 1000
 
     # ESKF states and matrices
     p_ins = x_ins[0]
@@ -112,15 +112,3 @@ def updateKalmanFilter(x_ins, P_prd, h, Qd, Rd, f_imu, w_imu, gps_read, y_pos=No
     x_ins = np.array([p_ins, v_ins, b_acc_ins, theta_ins, b_ars_ins])
 
     return x_ins, P_prd
-
-
-
-# # Compute the Euler rate transformation matrix for 'zyx' convention
-    # phi, theta, psi = theta_ins[0], theta_ins[1], theta_ins[2]
-    # T = np.array([
-    #     [1, np.sin(phi)*np.tan(theta), np.cos(phi)*np.tan(theta)],
-    #     [0, np.cos(phi), -np.sin(phi)],
-    #     [0, np.sin(phi)/np.cos(theta), np.cos(phi)/np.cos(theta)]
-    # ])
-    # theta_ins = theta_ins + h * T @ w_ins
-    # theta_ins = theta_ins + h * tzyx(theta_ins[0],) @ w_ins
