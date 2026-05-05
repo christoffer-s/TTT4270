@@ -6,7 +6,6 @@ import sys
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-
 from gps_to_csv_call import get_gps
 from Fossen_euler import updateKalmanFilter
 import acc
@@ -242,7 +241,6 @@ def kjor_bil_til_maal(G, waypoints_xy, slutt_maal_xy):
     except KeyboardInterrupt:
         print(f"Avslutter...")
 
-
 # ==========================================
 # 5. START AV PROGRAMMET
 # ==========================================
@@ -262,8 +260,6 @@ P_prd = np.eye(15)
 
 f_fast = 1000
 h = 1/f_fast
-
-
 
 if __name__ == "__main__":
     print("Initialiserer systemet (Kartesisk XY)...")
